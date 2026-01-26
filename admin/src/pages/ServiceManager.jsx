@@ -149,19 +149,19 @@ const ServiceManager = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 space-y-8">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex justify-between items-center"
+        className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white rounded-xl shadow-sm p-6 border border-gray-200"
       >
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Service Manager</h1>
-          <p className="text-gray-600 mt-1">Manage your service offerings and pricing</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Service Manager</h1>
+          <p className="text-gray-600 text-lg">Manage your service offerings and pricing with ease</p>
         </div>
-        <Link to="/services/new" className="text-white px-4 py-2 rounded-lg font-medium hover:bg-secondary transition-colors flex items-center">
-          <Plus className="h-4 w-4 mr-2" />
+        <Link to="/services/new" className="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center transform hover:scale-105">
+          <Plus className="h-5 w-5 mr-2" />
           New Service
         </Link>
       </motion.div>
@@ -171,24 +171,24 @@ const ServiceManager = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="card"
+        className="bg-white rounded-xl shadow-sm p-6 border border-gray-200"
       >
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
               type="text"
               placeholder="Search services..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary pl-10"
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-gray-50 transition-all duration-200"
             />
           </div>
 
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-gray-50 transition-all duration-200"
           >
             {categories.map(cat => (
               <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -198,16 +198,18 @@ const ServiceManager = () => {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-gray-50 transition-all duration-200"
           >
             <option value="all">All Status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
 
-          <div className="flex items-center text-sm text-gray-600">
-            <Filter className="h-4 w-4 mr-2" />
-            {filteredServices.length} of {services.length} services
+          <div className="flex items-center justify-center bg-primary/10 rounded-xl px-4 py-3">
+            <Filter className="h-5 w-5 mr-3 text-primary" />
+            <span className="text-sm font-medium text-gray-700">
+              {filteredServices.length} of {services.length} services
+            </span>
           </div>
         </div>
       </motion.div>
@@ -217,86 +219,93 @@ const ServiceManager = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
       >
         {filteredServices.map((service) => (
-          <div
+          <motion.div
             key={service.id}
-            className="card hover:shadow-lg transition-shadow duration-200"
+            whileHover={{ y: -5 }}
+            className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 overflow-hidden flex flex-col h-full"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{service.title}</h3>
-              <div className="flex items-center space-x-2">
-                {service.featured && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                    Featured
-                  </span>
-                )}
-                <button
-                  onClick={() => handleToggleActive(service.id)}
-                  className={`px-2 py-1 text-xs font-medium rounded-full ${
-                    service.active
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
-                  }`}
-                >
-                  {service.active ? 'Active' : 'Inactive'}
-                </button>
+            <div className="p-6 flex flex-col flex-grow">
+              <div className="flex items-start justify-between mb-4">
+                <h3 className="text-xl font-bold text-gray-900 leading-tight">{service.title}</h3>
+                <div className="flex items-center space-x-2 ml-4">
+                  {service.featured && (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-yellow-400 to-yellow-500 text-white shadow-sm">
+                      ⭐ Featured
+                    </span>
+                  )}
+                  <button
+                    onClick={() => handleToggleActive(service.id)}
+                    className={`px-3 py-1 text-xs font-semibold rounded-full transition-all duration-200 ${
+                      service.active
+                        ? 'bg-gradient-to-r from-green-400 to-green-500 text-white shadow-sm'
+                        : 'bg-gradient-to-r from-red-400 to-red-500 text-white shadow-sm'
+                    }`}
+                  >
+                    {service.active ? 'Active' : 'Inactive'}
+                  </button>
+                </div>
+              </div>
+
+              <p className="text-gray-600 text-sm mb-6 line-clamp-3 leading-relaxed">
+                {service.description}
+              </p>
+
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center text-sm text-gray-700 bg-green-50 rounded-lg p-3">
+                  <DollarSign className="h-5 w-5 mr-3 text-green-600" />
+                  <span className="font-semibold">{service.price}</span>
+                </div>
+                <div className="flex items-center text-sm text-gray-700 bg-blue-50 rounded-lg p-3">
+                  <TrendingUp className="h-5 w-5 mr-3 text-blue-600" />
+                  <span>{service.results}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                <span className="inline-flex px-3 py-1 text-xs font-bold rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm">
+                  {service.category.toUpperCase()}
+                </span>
+
+                <div className="flex items-center space-x-1">
+                  <button
+                    onClick={() => handleToggleFeatured(service.id)}
+                    className={`p-2 rounded-lg transition-all duration-200 ${
+                      service.featured
+                        ? 'text-yellow-600 bg-yellow-50 hover:bg-yellow-100'
+                        : 'text-gray-400 bg-gray-50 hover:bg-gray-100'
+                    }`}
+                    title={service.featured ? 'Unfeature' : 'Feature'}
+                  >
+                    ⭐
+                  </button>
+                  <Link
+                    to={`/services/${service.id}`}
+                    className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-all duration-200"
+                    title="View"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    to={`/services/edit/${service.id}`}
+                    className="p-2 text-green-600 bg-green-50 hover:bg-green-100 rounded-lg transition-all duration-200"
+                    title="Edit"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(service.id)}
+                    className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-all duration-200"
+                    title="Delete"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </div>
-
-            <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-              {service.description}
-            </p>
-
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center text-sm text-gray-600">
-                <DollarSign className="h-4 w-4 mr-2 text-green-500" />
-                <span>{service.price}</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600">
-                <TrendingUp className="h-4 w-4 mr-2 text-blue-500" />
-                <span>{service.results}</span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-              <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                {service.category.toUpperCase()}
-              </span>
-
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => handleToggleFeatured(service.id)}
-                  className={`p-1 rounded ${service.featured ? 'text-yellow-600' : 'text-gray-400'} hover:text-yellow-600`}
-                  title={service.featured ? 'Unfeature' : 'Feature'}
-                >
-                  ⭐
-                </button>
-                <Link
-                  to={`/services/${service.id}`}
-                  className="text-blue-600 hover:text-blue-900 p-1"
-                  title="View"
-                >
-                  <Eye className="h-4 w-4" />
-                </Link>
-                <Link
-                  to={`/services/edit/${service.id}`}
-                  className="text-green-600 hover:text-green-900 p-1"
-                  title="Edit"
-                >
-                  <Edit className="h-4 w-4" />
-                </Link>
-                <button
-                  onClick={() => handleDelete(service.id)}
-                  className="text-red-600 hover:text-red-900 p-1"
-                  title="Delete"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          </div>
+          </motion.div>
         ))}
       </motion.div>
 
@@ -304,14 +313,18 @@ const ServiceManager = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center py-12 card"
+          className="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-200"
         >
-          <p className="text-gray-500 text-lg">No services found.</p>
+          <div className="mb-6">
+            <Settings className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 text-xl font-medium">No services found.</p>
+            <p className="text-gray-400 text-sm mt-2">Try adjusting your filters or create a new service.</p>
+          </div>
           <Link
             to="/services/new"
-            className="mt-4 inline-flex items-center text-primary hover:text-secondary font-semibold"
+            className="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105"
           >
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="h-5 w-5 mr-2" />
             Create your first service
           </Link>
         </motion.div>
@@ -322,31 +335,31 @@ const ServiceManager = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="card"
+        className="bg-white rounded-xl shadow-sm p-8 border border-gray-200"
       >
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Service Overview</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-primary">{services.length}</div>
-            <div className="text-sm text-gray-600">Total Services</div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Service Overview</h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="text-center p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl border border-primary/20">
+            <div className="text-3xl font-bold text-primary mb-2">{services.length}</div>
+            <div className="text-sm font-medium text-gray-600">Total Services</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">
+          <div className="text-center p-4 bg-gradient-to-br from-green-100 to-green-50 rounded-xl border border-green-200">
+            <div className="text-3xl font-bold text-green-600 mb-2">
               {services.filter(s => s.active).length}
             </div>
-            <div className="text-sm text-gray-600">Active Services</div>
+            <div className="text-sm font-medium text-gray-600">Active Services</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-yellow-600">
+          <div className="text-center p-4 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-xl border border-yellow-200">
+            <div className="text-3xl font-bold text-yellow-600 mb-2">
               {services.filter(s => s.featured).length}
             </div>
-            <div className="text-sm text-gray-600">Featured Services</div>
+            <div className="text-sm font-medium text-gray-600">Featured Services</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">
+          <div className="text-center p-4 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl border border-blue-200">
+            <div className="text-3xl font-bold text-blue-600 mb-2">
               {services.filter(s => !s.active).length}
             </div>
-            <div className="text-sm text-gray-600">Inactive Services</div>
+            <div className="text-sm font-medium text-gray-600">Inactive Services</div>
           </div>
         </div>
       </motion.div>

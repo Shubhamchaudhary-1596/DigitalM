@@ -55,6 +55,10 @@ All code changes for this work are isolated on the `audit/end-to-end-fixes-docs`
 
 These are source changes on a review branch. They are not yet production deployed. Email delivery requires valid SMTP configuration. Password reset is intentionally reported as unavailable until an actual reset-email/token workflow is configured. The admin supports content and enquiry management; the removed packages/projects/users/profile mock screens are not represented as working features.
 
+## Repository access note
+
+GitHub repository metadata currently reports this repository as **public**. If the repository is intended to be private, change visibility in GitHub repository Settings after reviewing who depends on public access. This audit branch did not change repository visibility. No real secrets should be committed regardless of visibility.
+
 ## Current verification status
 
 This is a source-code audit, not a production sign-off. GitHub Actions run [`38693894309`](https://github.com/Shubhamchaudhary-1596/DigitalM/actions/runs/38693894309) passed for all three projects: public frontend lint/build, admin frontend lint/build, and server tests. The dependency audit reported **0 low, 0 moderate, 0 high and 0 critical advisories** for each project on that tested commit. A blocking CI step now fails if high or critical npm advisories return.

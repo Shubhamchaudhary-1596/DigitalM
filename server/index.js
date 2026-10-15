@@ -447,13 +447,15 @@ app.get('/sitemap.xml', async (req, res) => {
   try {
     const base = (process.env.PUBLIC_SITE_URL || 'https://webzoneo.com').replace(/\/$/, '');
     const staticPaths = ['', '/services', '/about', '/work', '/blog', '/contact', '/services/seo', '/services/ppc', '/services/social-media', '/services/web-development', '/services/content-marketing', '/services/analytics'];
-    const [services, blogs] = await Promise.all([
+    const [services, blogs, portfolio] = await Promise.all([
       Service.find({ active: true }).select('slug updatedAt').lean(),
-      Blog.find({ status: 'published' }).select('slug updatedAt publishedAt').lean()
+      Blog.find({ status: 'published' }).select('slug updatedAt publishedAt').lean(),
+      PortfolioItem.find({ published: true }).select('slug updatedAt').lean()
     ]);
     const urls = new Set(staticPaths.map((path) => base + path));
     services.forEach((item) => urls.add(base + '/services/' + encodeURIComponent(item.slug)));
     blogs.forEach((item) => urls.add(base + '/blog/' + encodeURIComponent(item.slug)));
+    portfolio.forEach((item) => urls.add(base + '/work/' + encodeURIComponent(item.slug)));
     const xmlEscape = (value) => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
     const body = Array.from(urls).map((url) => '<url><loc>' + xmlEscape(url) + '</loc></url>').join('');
     res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + body + '</urlset>');

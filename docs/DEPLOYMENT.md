@@ -66,6 +66,23 @@ curl -i https://api2.webzoneo.com/api/health
 ```
 For protected routes, confirm an unauthenticated request returns `401` or `403`. For contact submissions, use a dedicated test address and confirm a persisted record plus configured notification delivery. Do not consider a `201` response alone proof that email delivery worked.
 
+### Public API proxy
+
+If the public frontend and API share the same domain, the Webzoneo public site's Nginx server block must proxy API paths to the Express process (verify the actual upstream port and preserve any existing location directives):
+
+```nginx
+location /api/ {
+    proxy_pass http://127.0.0.1:5000;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
+
+The admin frontend can use the same proxy if it is served from the same origin; otherwise set its public `VITE_API_URL` to the API origin and ensure that origin is included in `CORS_ORIGINS`. The Vite configs proxy `/api` to local port 5000 during development.
+
 ## 6. Deploy frontend
 
 Build the Vite apps and deploy their `dist/` directories using the existing Nginx site configuration. Confirm SPA fallback routing is configured for React Router direct URL visits. Check that the admin app is served only on the intended admin domain and that API CORS allows only trusted origins.

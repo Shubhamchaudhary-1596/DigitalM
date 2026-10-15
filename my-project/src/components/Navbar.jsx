@@ -32,28 +32,14 @@ const Navbar = () => {
     }`} role="navigation" aria-label="Main navigation">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-30">
-          {/* <Link to="/" className="flex items-center space-x-2" aria-label="DigitalMax Home">
-            <div className="w-8 h-8 bg-[#0ea5a4] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">D</span>
-            </div> */}
-            {/* <span className={`font-bold text-xl ${
-              isScrolled || location.pathname !== '/' ? 'text-[#111827]' : 'text-white'
-            }`}> */}
-             {/* <span className={`font-bold text-xl text-[#111827]
-            }`}>
-              DigitalMax
-            </span>
-          </Link> */}
-
-
 <Link
   to="/"
   className="flex items-center"
-  aria-label="WebZoneo Home"
+  aria-label="Webzoneo home"
 >
   <img
     src="/logo.png"
-    alt="WebZoneo Logo"
+    alt="Webzoneo logo"
     className="w-50 h-50 object-contain"
   />
 </Link>

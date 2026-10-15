@@ -23,7 +23,7 @@ const About = () => (
         <h2 className="text-3xl font-bold text-[#111827] text-center mb-4">How we work</h2>
         <p className="text-gray-600 text-center max-w-3xl mx-auto mb-10">Every engagement should begin with a shared understanding of the business, the audience and the outcomes that matter.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {values.map(({icon: Icon, title, text}) => <article key={title} className="border border-gray-200 rounded-2xl p-7"><Icon className="text-[#0ea5a4] mb-4" size={32}/><h3 className="text-xl font-semibold mb-2">{title}</h3><p className="text-gray-600 leading-relaxed">{text}</p></article>)}
+          {values.map((item) => { const Icon = item.icon; return <article key={item.title} className="border border-gray-200 rounded-2xl p-7"><Icon className="text-[#0ea5a4] mb-4" size={32}/><h3 className="text-xl font-semibold mb-2">{item.title}</h3><p className="text-gray-600 leading-relaxed">{item.text}</p></article>; })}
         </div>
         <div className="text-center mt-12"><Link to="/contact" className="inline-flex bg-[#0ea5a4] text-white px-7 py-3 rounded-lg font-semibold hover:bg-[#0b9488]">Talk about your project</Link></div>
       </div>

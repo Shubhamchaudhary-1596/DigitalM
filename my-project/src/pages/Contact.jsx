@@ -64,13 +64,13 @@ const Contact = () => {
       icon: Mail,
       title: 'Email Us',
       details: import.meta.env.VITE_PUBLIC_CONTACT_EMAIL || '',
-      description: 'Send us an email anytime'
+      description: import.meta.env.VITE_PUBLIC_CONTACT_EMAIL ? 'Send us an email' : ''
     },
     {
       icon: Phone,
       title: 'Call Us',
       details: import.meta.env.VITE_PUBLIC_CONTACT_PHONE || '',
-      description: 'Mon-Fri from 9am to 6pm EST'
+      description: import.meta.env.VITE_PUBLIC_BUSINESS_HOURS || ''
     },
     {
       icon: MapPin,
@@ -372,22 +372,7 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Map Section */}
-      {/* <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-[#111827] mb-12">Our Location</h2>
-          <div className="bg-gray-200 rounded-2xl h-96 flex items-center justify-center">
-            <div className="text-center">
-              <MapPin className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">
-                Interactive map would be embedded here<br />
-                123 Business Ave, Suite 100<br />
-                New York, NY 10001
-              </p>
-            </div>
-          </div>
-        </div>
-      </section> */}
+
     </div>
   );
 };

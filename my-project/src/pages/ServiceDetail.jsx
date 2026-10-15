@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 
@@ -14,7 +14,7 @@ const serviceData = {
 const ServiceDetail = () => {
   const { slug } = useParams();
   const [apiService, setApiService] = useState(null);
-  const service = apiService ? { ...(serviceData[slug] || {}), title: apiService.title, description: apiService.description, features: Array.isArray(apiService.features) && apiService.features.length ? apiService.features : (serviceData[slug]?.features || []) } : serviceData[slug];
+  const service = useMemo(() => apiService ? { ...(serviceData[slug] || {}), title: apiService.title, description: apiService.description, features: Array.isArray(apiService.features) && apiService.features.length ? apiService.features : (serviceData[slug]?.features || []) } : serviceData[slug], [apiService, slug]);
 
   useEffect(() => {
     let cancelled = false;

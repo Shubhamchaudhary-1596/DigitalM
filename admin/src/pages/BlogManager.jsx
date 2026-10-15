@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { api } from '../contexts/AuthContext';
+import { api } from '../lib/api';
 
 const emptyForm = { title: '', slug: '', excerpt: '', content: '', category: 'SEO', author: 'Webzoneo Editorial Team', status: 'draft', featured: false, image: '', tags: '' };
 

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Search, Target, Users, Code, PenTool, BarChart3, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';

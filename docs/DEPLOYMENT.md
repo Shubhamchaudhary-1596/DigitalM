@@ -129,7 +129,7 @@ Use the actual API upstream port and validate with `sudo nginx -t`. Confirm `htt
 - Contact form shows success only after the API accepts the submission; invalid requests show an error.
 - Admin pages redirect unauthenticated visitors to login.
 - API rejects missing/invalid credentials on protected operations.
-- Blog/service changes persist after refresh and appear publicly only when published.
+- Blog/service/portfolio changes persist after refresh and appear publicly only when published.
 - Sitemap and robots rules return HTTP 200 and contain the correct canonical domain.
 - Review PM2 logs and Nginx error logs.
 - Record the deployed commit SHA and rollback plan.

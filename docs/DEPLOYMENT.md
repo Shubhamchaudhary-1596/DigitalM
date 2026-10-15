@@ -90,6 +90,21 @@ sudo certbot certificates
 ```
 Do not edit or renew certificates blindly. Verify the active server blocks for the public site, admin domain and API domain, including upstream ports and SSL certificate names.
 
+### Dynamic sitemap routing
+
+The public frontend includes a static sitemap fallback. The API also generates `/sitemap.xml` from active services and published articles. To keep new CMS content in the sitemap, add an exact-match Nginx location in the **Webzoneo public site's** server block before reloading:
+
+```nginx
+location = /sitemap.xml {
+    proxy_pass http://127.0.0.1:5000/sitemap.xml;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
+```
+
+Use the actual API upstream port and validate with `sudo nginx -t`. Confirm `https://webzoneo.com/sitemap.xml` returns XML containing the current published article and active service URLs. The API's `PUBLIC_SITE_URL` must match the canonical public domain.
+
 ## 9. Post-deploy smoke test
 
 - Homepage and service/blog URLs load directly, not only via homepage navigation.

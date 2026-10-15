@@ -1,5 +1,5 @@
 {
-  "name": "digitalmax-server",
+  "name": "webzoneo-server",
   "version": "1.0.0",
   "description": "Webzoneo API server",
   "main": "index.js",

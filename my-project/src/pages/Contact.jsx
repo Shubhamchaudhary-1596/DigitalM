@@ -213,7 +213,7 @@ const Contact = () => {
                         value={formData.name}
                         onChange={handleChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0ea5a4] focus:border-transparent transition-colors"
-                        placeholder="John Smith"
+                        placeholder="Your full name"
                       />
                     </div>
                     
@@ -244,7 +244,7 @@ const Contact = () => {
                         value={formData.phone}
                         onChange={handleChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0ea5a4] focus:border-transparent transition-colors"
-                        placeholder="+1 (555) 123-4567"
+                        placeholder="Include country code if outside India"
                       />
                     </div>
                     

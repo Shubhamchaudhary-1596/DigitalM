@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FileText, Settings, Inbox, ArrowRight } from 'lucide-react';
-import { api } from '../contexts/AuthContext';
+import { api } from '../lib/api';
 
 const Dashboard = () => {
   const [counts, setCounts] = useState({ blogs: null, services: null, contacts: null });

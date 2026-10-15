@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const app = express();
@@ -63,6 +64,8 @@ const PortfolioItem = mongoose.model('PortfolioItem', {
   slug: { type: String, required: true, unique: true },
   createdAt: { type: Date, default: Date.now },
 });
+
+const Subscriber = mongoose.model('Subscriber', { email: { type: String, required: true, unique: true, lowercase: true, trim: true }, createdAt: { type: Date, default: Date.now } });
 
 const Client = mongoose.model('Client', {
   name: { type: String, required: true },

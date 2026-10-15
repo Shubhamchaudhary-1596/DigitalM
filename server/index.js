@@ -294,8 +294,9 @@ app.post('/api/contact', rateLimit({ windowMs: 15 * 60 * 1000, limit: 8, standar
       id: contact._id 
     });
   } catch (error) {
-    console.error('Contact submission error:', error);
-    res.status(400).json({ error: 'Unable to submit this enquiry. Check the fields and try again.' });
+    console.error('Contact submission error:', error.message);
+    if (error.name === 'ValidationError') return res.status(400).json({ error: 'Some contact fields are invalid. Check them and try again.' });
+    res.status(500).json({ error: 'Unable to save your enquiry right now. Please try again later.' });
   }
 });
 

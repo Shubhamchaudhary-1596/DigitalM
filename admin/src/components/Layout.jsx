@@ -6,6 +6,7 @@ import {
   FileText,
   Settings,
   Inbox,
+  Briefcase,
   User,
   LogOut,
   Menu,
@@ -23,6 +24,7 @@ const Layout = () => {
     { name: 'Blogs', href: '/blogs', icon: FileText },
     { name: 'Services', href: '/services', icon: Settings },
     { name: 'Enquiries', href: '/contacts', icon: Inbox },
+    { name: 'Portfolio', href: '/portfolio', icon: Briefcase },
   ];
 
   const handleLogout = () => {

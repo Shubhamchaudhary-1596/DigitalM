@@ -5,9 +5,7 @@ import {
   LayoutDashboard,
   FileText,
   Settings,
-  Package,
-  FolderOpen,
-  Users,
+  Inbox,
   User,
   LogOut,
   Menu,
@@ -25,9 +23,7 @@ const Layout = () => {
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Blogs', href: '/blogs', icon: FileText },
     { name: 'Services', href: '/services', icon: Settings },
-    { name: 'Packages', href: '/packages', icon: Package },
-    { name: 'Projects', href: '/projects', icon: FolderOpen },
-    { name: 'Users', href: '/users', icon: Users, adminOnly: true },
+    { name: 'Enquiries', href: '/contacts', icon: Inbox },
   ];
 
   const handleLogout = () => {
@@ -61,7 +57,7 @@ const Layout = () => {
       {/* Sidebar */}
       <div className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="logo">
-          DigitalMax Admin
+          Webzoneo Admin
         </div>
 
         {/* Navigation */}

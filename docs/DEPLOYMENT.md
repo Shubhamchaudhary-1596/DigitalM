@@ -33,8 +33,17 @@ Vite variables prefixed with `VITE_` are embedded in the client bundle and must 
 ## 3. Configure administrator credentials and seed starter content
 
 - Set `ADMIN_EMAIL` to the intended administrator account.
-- Generate a bcrypt hash for a strong password using the installed `bcryptjs` package in a trusted shell. Avoid putting the plaintext password in source control or shared logs. Store the resulting hash in `ADMIN_PASSWORD_HASH` as a private environment variable.
-- Set a long random `JWT_SECRET`; restart the API after updating the environment.
+- Generate a bcrypt hash for a strong password in a trusted shell. This prompts without echoing the password; copy only the resulting hash into the private ADMIN_PASSWORD_HASH environment variable:
+
+```bash
+read -s -p "Initial admin password: " ADMIN_INITIAL_PASSWORD; echo
+export ADMIN_INITIAL_PASSWORD
+node -e "require('bcryptjs').hash(process.env.ADMIN_INITIAL_PASSWORD, 12).then(console.log)"
+unset ADMIN_INITIAL_PASSWORD
+```
+
+Avoid putting plaintext credentials in source control, shared logs or shell command arguments.
+- Generate a long random JWT secret, for example with `openssl rand -base64 48`, and store it as JWT_SECRET. Restart the API after updating the environment.
 - After verifying the MongoDB URI and taking a backup, run `npm run seed` once from `server/`. The seed command inserts starter services and editorial articles only when those collections are empty; it skips non-empty collections. Review all starter content in the admin UI before treating it as approved publication copy.
 - Configure SMTP values if email notifications are required. Contact records are still saved when SMTP is not configured, but the API logs that notifications are unavailable.
 

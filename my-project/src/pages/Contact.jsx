@@ -101,12 +101,15 @@ const Contact = () => {
   ];
 
   const budgetRanges = [
-    'Under $5,000/month',
-    '$5,000 - $10,000/month',
-    '$10,000 - $25,000/month',
-    '$25,000 - $50,000/month',
-    '$50,000+/month',
-    'One-time project'
+    'INR: Under ₹50,000/month',
+    'INR: ₹50,000–₹2 lakh/month',
+    'INR: ₹2–5 lakh/month',
+    'INR: ₹5 lakh+/month',
+    'USD: Under $1,000/month',
+    'USD: $1,000–$5,000/month',
+    'USD: $5,000+/month',
+    'One-time project',
+    'Prefer to discuss'
   ];
 
   const timelines = [
@@ -200,7 +203,6 @@ const Contact = () => {
                   </p>
                 </div>
 
-                {submitError && <p role="alert" className="mb-4 rounded-lg bg-red-50 p-4 text-red-700">{submitError}</p>}
                 {submitError && <p role="alert" className="mb-4 rounded-lg bg-red-50 p-4 text-red-700">{submitError}</p>}
                 <form onSubmit={handleSubmit} className="space-y-8">
                   {/* Personal Information */}
@@ -347,7 +349,7 @@ const Contact = () => {
                     </button>
                     
                     <p className="text-gray-500 text-sm mt-4">
-                      We'll get back to you within 24 hours with a customized proposal.
+                      We'll review your enquiry and follow up using the contact details provided.
                     </p>
                   </div>
                 </form>

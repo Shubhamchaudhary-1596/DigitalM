@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import BlogManager from './pages/BlogManager';
 import ServiceManager from './pages/ServiceManager';
 import ContactsManager from './pages/ContactsManager';
+import PortfolioManager from './pages/PortfolioManager';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
@@ -26,6 +27,7 @@ function App() {
             <Route path="services/new" element={<ServiceManager />} />
             <Route path="services/edit/:id" element={<ServiceManager />} />
             <Route path="contacts" element={<ContactsManager />} />
+            <Route path="portfolio" element={<PortfolioManager />} />
           </Route>
 
           {/* Public routes for auth pages */}

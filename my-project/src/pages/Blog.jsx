@@ -9,7 +9,7 @@ const Blog = () => {
   const [posts, setPosts] = useState(blogPosts);
 
   useEffect(() => {
-    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\\/$/, '');
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
     fetch(apiBase + '/api/blogs').then((response) => response.ok ? response.json() : Promise.reject(new Error('API unavailable'))).then((items) => {
       if (Array.isArray(items) && items.length) setPosts(items.map((item) => ({ ...item, date: item.publishedAt || item.createdAt || item.date, readTime: item.readTime || '5 min read' })));
     }).catch(() => { /* Keep bundled editorial content if API is unavailable. */ });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -11,14 +11,10 @@ import About from './pages/About';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
 import Contact from './pages/Contact';
+import NotFound from './pages/NotFound';
 import ScrollToTop from './components/ScrollToTop';
 
 // Admin imports
-import AdminDashboard from './pages/admin/AdminDashboard';
-import BlogManager from './pages/admin/BlogManager';
-import ServicesManager from './pages/admin/ServicesManager';
-import BlogEditor from './pages/admin/BlogEditor';
-import ServiceEditor from './pages/admin/ServiceEditor';
 
 function App() {
   return (
@@ -37,15 +33,11 @@ function App() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<NotFound />} />
 
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/blog" element={<BlogManager />} />
-            <Route path="/admin/blog/new" element={<BlogEditor />} />
-            <Route path="/admin/blog/edit/:id" element={<BlogEditor />} />
-            <Route path="/admin/services" element={<ServicesManager />} />
-            <Route path="/admin/services/new" element={<ServiceEditor />} />
-            <Route path="/admin/services/edit/:id" element={<ServiceEditor />} />
+            {/* Admin lives in the separate authenticated dashboard application. */}
+            <Route path="/admin/*" element={<Navigate to="/contact" replace />} />
+
           </Routes>
         </main>
         <Footer />

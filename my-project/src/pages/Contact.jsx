@@ -363,8 +363,7 @@ const Contact = () => {
                   Thank You!
                 </h3>
                 <p className="text-gray-600 text-lg">
-                  Your message has been sent successfully. We'll get back to you within 24 hours 
-                  with a customized proposal for your project.
+                  Your enquiry has been received. We will review it and follow up using the contact details you provided.
                 </p>
               </motion.div>
             )}

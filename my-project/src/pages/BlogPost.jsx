@@ -1,11 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 import { blogPosts } from '../data/blogPosts';
 
 const BlogPost = () => {
   const { slug } = useParams();
-  const post = blogPosts.find((item) => item.slug === slug);
+  const [apiPost, setApiPost] = useState(null);
+  const post = apiPost || blogPosts.find((item) => item.slug === slug);
+
+  useEffect(() => {
+    let cancelled = false;
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\\/$/, '');
+    fetch(apiBase + '/api/blogs/' + encodeURIComponent(slug)).then((response) => response.ok ? response.json() : Promise.reject(new Error('Article not found in API'))).then((item) => { if (!cancelled) setApiPost({ ...item, date: item.publishedAt || item.createdAt || item.date, readTime: item.readTime || '5 min read', sections: typeof item.content === 'string' ? [{ heading: 'Article', paragraphs: item.content.split(/\\n\\s*\\n/).filter(Boolean) }] : [] }); }).catch(() => { if (!cancelled) setApiPost(null); });
+    return () => { cancelled = true; };
+  }, [slug]);
 
   useEffect(() => {
     document.title = post ? post.title + ' | Webzoneo' : 'Article Not Found | Webzoneo';
@@ -40,7 +48,7 @@ const BlogPost = () => {
         </div>
       </header>
       <div className="max-w-3xl mx-auto px-4 py-12">
-        {post.sections.map((section) => <section key={section.heading} className="mb-10">
+        {(post.sections || []).map((section) => <section key={section.heading} className="mb-10">
           <h2 className="text-2xl font-bold text-[#111827] mb-4">{section.heading}</h2>
           {section.paragraphs.map((paragraph, index) => <p key={index} className="text-gray-700 text-lg leading-8 mb-4">{paragraph}</p>)}
         </section>)}

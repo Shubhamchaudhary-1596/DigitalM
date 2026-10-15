@@ -6,14 +6,22 @@ import { blogPosts } from '../data/blogPosts';
 const Blog = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('All');
+  const [posts, setPosts] = useState(blogPosts);
+
+  useEffect(() => {
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\\/$/, '');
+    fetch(apiBase + '/api/blogs').then((response) => response.ok ? response.json() : Promise.reject(new Error('API unavailable'))).then((items) => {
+      if (Array.isArray(items) && items.length) setPosts(items.map((item) => ({ ...item, date: item.publishedAt || item.createdAt || item.date, readTime: item.readTime || '5 min read' })));
+    }).catch(() => { /* Keep bundled editorial content if API is unavailable. */ });
+  }, []);
 
   useEffect(() => { document.title = 'Digital Marketing Insights | Webzoneo'; }, []);
-  const categories = ['All', ...new Set(blogPosts.map((post) => post.category))];
-  const filtered = useMemo(() => blogPosts.filter((post) => {
+  const categories = ['All', ...new Set(posts.map((post) => post.category))];
+  const filtered = useMemo(() => posts.filter((post) => {
     const matchesCategory = category === 'All' || post.category === category;
     const term = searchTerm.trim().toLowerCase();
     return matchesCategory && (!term || (post.title + ' ' + post.excerpt + ' ' + post.category).toLowerCase().includes(term));
-  }), [searchTerm, category]);
+  }), [posts, searchTerm, category]);
 
   return (
     <div className="pt-20">

@@ -3,6 +3,8 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 export const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '' });
+const storedToken = localStorage.getItem('token');
+if (storedToken) api.defaults.headers.common.Authorization = 'Bearer ' + storedToken;
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

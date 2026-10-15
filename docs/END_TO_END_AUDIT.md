@@ -49,11 +49,11 @@ All code changes for this work are isolated on the `audit/end-to-end-fixes-docs`
 - Connected the public contact form to the API; success now depends on an accepted API response and errors are shown to the visitor.
 - Added server-side contact validation, request rate limits, restricted CORS, database readiness reporting, optional SMTP lead notifications and a protected contact inbox endpoint.
 - Added configured administrator login using a bcrypt password hash and expiring JWT; removed mock authentication and protected the separate dashboard routes.
-- Added authenticated CRUD endpoints for blog posts and services, admin screens that use the API, public read endpoints, a safe plain-text article renderer and a one-time starter-content seed command.
+- Added authenticated CRUD endpoints for blog posts, services and portfolio case studies, admin screens that use the API, public read endpoints, a safe plain-text article renderer and a one-time starter-content seed command.
 - Added real dashboard counts, removed unimplemented mock dashboard sections from navigation, added a not-found page, and added initial CI plus email/slug validator unit tests.
 - Added `docs/DEPLOYMENT.md`, environment templates and this audit log.
 
-These are source changes on a review branch. They are not yet production deployed. Email delivery requires valid SMTP configuration. Password reset is intentionally reported as unavailable until an actual reset-email/token workflow is configured. The admin supports content and enquiry management; the removed packages/projects/users/profile mock screens are not represented as working features.
+These are source changes on a review branch. They are not yet production deployed. Email delivery requires valid SMTP configuration. Password reset is intentionally reported as unavailable until an actual reset-email/token workflow is configured. The admin supports blog, service, portfolio and enquiry management; the removed packages/projects/users/profile mock screens are not represented as working features.
 
 ## Repository access note
 

@@ -198,6 +198,7 @@ const Contact = () => {
                 </div>
 
                 {submitError && <p role="alert" className="mb-4 rounded-lg bg-red-50 p-4 text-red-700">{submitError}</p>}
+                {submitError && <p role="alert" className="mb-4 rounded-lg bg-red-50 p-4 text-red-700">{submitError}</p>}
                 <form onSubmit={handleSubmit} className="space-y-8">
                   {/* Personal Information */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -335,10 +336,11 @@ const Contact = () => {
                   <div className="text-center">
                     <button
                       type="submit"
-                      className="bg-[#0ea5a4] text-white px-12 py-4 rounded-lg font-semibold hover:bg-[#0b9488] transition-all duration-300 flex items-center justify-center mx-auto group transform hover:scale-105"
+                      disabled={isSubmitting}
+                      className="bg-[#0ea5a4] disabled:opacity-60 disabled:cursor-not-allowed text-white px-12 py-4 rounded-lg font-semibold hover:bg-[#0b9488] transition-all duration-300 flex items-center justify-center mx-auto group transform hover:scale-105"
                     >
                       <Send className="mr-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                      Send My Request
+                      {isSubmitting ? "Sending..." : "Send My Request"}
                     </button>
                     
                     <p className="text-gray-500 text-sm mt-4">

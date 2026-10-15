@@ -23,6 +23,7 @@ const Navbar = () => {
     { name: 'Social Media', slug: 'social-media' },
     { name: 'Web Development', slug: 'web-development' },
     { name: 'Content Marketing', slug: 'content-marketing' },
+    { name: 'Analytics & Reporting', slug: 'analytics' },
   ];
 
   return (

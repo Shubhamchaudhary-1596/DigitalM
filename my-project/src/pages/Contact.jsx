@@ -21,27 +21,35 @@ const Contact = () => {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
-  const handleSubmit = (e ) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission
-    console.log('Form submitted:', formData);
-    setIsSubmitted(true);
-    
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        service: '',
-        budget: '',
-        message: '',
-        timeline: ''
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+      const response = await fetch(`${apiBase}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
       });
-    }, 3000);
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(result.error || 'We could not send your enquiry. Please try again.');
+      }
+      setIsSubmitted(true);
+      setFormData({
+        name: '', email: '', phone: '', company: '', service: '',
+        budget: '', message: '', timeline: ''
+      });
+    } catch (error) {
+      setSubmitError(error.message || 'Unable to submit your enquiry. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -55,26 +63,26 @@ const Contact = () => {
     {
       icon: Mail,
       title: 'Email Us',
-      details: 'hello@digitalmax.com',
+      details: import.meta.env.VITE_PUBLIC_CONTACT_EMAIL || '',
       description: 'Send us an email anytime'
     },
     {
       icon: Phone,
       title: 'Call Us',
-      details: '+1 (555) 123-4567',
+      details: import.meta.env.VITE_PUBLIC_CONTACT_PHONE || '',
       description: 'Mon-Fri from 9am to 6pm EST'
     },
     {
       icon: MapPin,
       title: 'Visit Us',
-      details: '123 Business Ave, Suite 100',
-      description: 'New York, NY 10001'
+      details: import.meta.env.VITE_PUBLIC_CONTACT_ADDRESS || '',
+      description: import.meta.env.VITE_PUBLIC_CONTACT_ADDRESS ? 'Business address' : ''
     },
     {
       icon: Clock,
       title: 'Business Hours',
-      details: 'Monday - Friday',
-      description: '9:00 AM - 6:00 PM EST'
+      details: import.meta.env.VITE_PUBLIC_BUSINESS_DAYS || '',
+      description: import.meta.env.VITE_PUBLIC_BUSINESS_HOURS || ''
     }
   ];
 
@@ -160,8 +168,8 @@ const Contact = () => {
                     <Icon className="h-8 w-8" />
                   </div>
                   <h3 className="text-lg font-semibold text-[#111827] mb-2">{info.title}</h3>
-                  <p className="text-[#0b9488] font-medium mb-1">{info.details}</p>
-                  <p className="text-gray-600 text-sm">{info.description}</p>
+                  {(info.details || info.description) && <><p className="text-[#0b9488] font-medium mb-1">{info.details}</p>
+                  <p className="text-gray-600 text-sm">{info.description}</p></>}
                 </motion.div>
               );
             })}
@@ -189,6 +197,7 @@ const Contact = () => {
                   </p>
                 </div>
 
+                {submitError && <p role="alert" className="mb-4 rounded-lg bg-red-50 p-4 text-red-700">{submitError}</p>}
                 <form onSubmit={handleSubmit} className="space-y-8">
                   {/* Personal Information */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

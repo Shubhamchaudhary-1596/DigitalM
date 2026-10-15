@@ -5,29 +5,40 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
+    "dev": "node --watch index.js",
     "test": "node --test",
     "seed": "node seed-content.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.21.1",
+    "express": "^4.22.3",
     "helmet": "^8.0.0",
-    "mongoose": "^8.8.3",
+    "mongoose": "^8.24.1",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
     "express-rate-limit": "^7.5.0",
-    "nodemailer": "^6.9.16"
+    "nodemailer": "^10.1.1"
   },
-  "devDependencies": {
-    "nodemon": "^3.1.9"
-  },
+  "devDependencies": {},
   "keywords": [
     "express",
     "mongodb",
     "api"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "overrides": {
+    "body-parser": "^1.20.7",
+    "brace-expansion": "^1.1.21",
+    "express": "^4.22.3",
+    "minimatch": "^3.1.4",
+    "mongoose": "^8.24.1",
+    "nodemailer": "^10.1.1",
+    "path-to-regexp": "^0.1.13",
+    "picomatch": "^2.3.2",
+    "proxy-addr": "^2.0.8",
+    "qs": "^6.15.4",
+    "tar": "^7.5.21"
+  }
 }

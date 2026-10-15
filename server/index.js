@@ -387,7 +387,7 @@ app.get('/api/health', (req, res) => {
 // Default route
 app.get('/', (req, res) => {
   res.json({ 
-    message: 'DigitalMax API Server',
+    message: 'Webzoneo API Server',
     version: '1.0.0',
     status: 'Running'
   });

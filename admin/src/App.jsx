@@ -2,15 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Login from './pages/Login';
-import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
 import BlogManager from './pages/BlogManager';
 import ServiceManager from './pages/ServiceManager';
-import PackageManager from './pages/PackageManager';
-import ProjectManager from './pages/ProjectManager';
-import UserManager from './pages/UserManager';
-import Profile from './pages/Profile';
+import ContactsManager from './pages/ContactsManager';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
@@ -29,14 +25,7 @@ function App() {
             <Route path="services" element={<ServiceManager />} />
             <Route path="services/new" element={<ServiceManager />} />
             <Route path="services/edit/:id" element={<ServiceManager />} />
-            <Route path="packages" element={<PackageManager />} />
-            <Route path="packages/new" element={<PackageManager />} />
-            <Route path="packages/edit/:id" element={<PackageManager />} />
-            <Route path="projects" element={<ProjectManager />} />
-            <Route path="projects/new" element={<ProjectManager />} />
-            <Route path="projects/edit/:id" element={<ProjectManager />} />
-            <Route path="users" element={<UserManager />} />
-            <Route path="profile" element={<Profile />} />
+            <Route path="contacts" element={<ContactsManager />} />
           </Route>
 
           {/* Public routes for auth pages */}

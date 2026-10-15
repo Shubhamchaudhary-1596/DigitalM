@@ -35,6 +35,8 @@ const Contact = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) throw new Error('The contact API is not reachable. Please try again later.');
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new Error(result.error || 'We could not send your enquiry. Please try again.');

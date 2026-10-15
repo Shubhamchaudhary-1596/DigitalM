@@ -221,22 +221,23 @@ app.get('/api/portfolio', async (req, res) => {
   }
 });
 
-// Newsletter subscription
-app.post('/api/subscribe', async (req, res) => {
+// Newsletter subscription. Collect consent in the UI before calling this endpoint.
+app.post('/api/subscribe', rateLimit({ windowMs: 60 * 60 * 1000, limit: 5, standardHeaders: true, legacyHeaders: false }), async (req, res) => {
   try {
-    const { email } = req.body;
-    
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
+    const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
+      return res.status(400).json({ error: 'A valid email address is required' });
     }
-    
-    // Here you would typically integrate with an email service
-    // like Mailchimp, SendGrid, or similar
-    
-    res.status(201).json({ message: 'Successfully subscribed to newsletter' });
+    try {
+      await Subscriber.create({ email });
+      return res.status(201).json({ message: 'Subscription saved successfully' });
+    } catch (error) {
+      if (error.code === 11000) return res.status(200).json({ message: 'This email is already subscribed' });
+      throw error;
+    }
   } catch (error) {
-    console.error('Newsletter subscription error:', error);
-    res.status(500).json({ error: 'Failed to subscribe' });
+    console.error('Newsletter subscription error:', error.message);
+    res.status(500).json({ error: 'Failed to save subscription' });
   }
 });
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { api } from '../contexts/AuthContext';
+import { api } from '../lib/api';
 
 const ContactsManager = () => {
   const [contacts, setContacts] = useState([]);

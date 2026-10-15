@@ -1,4 +1,6 @@
 import React from 'react';
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 

@@ -162,6 +162,17 @@ app.post('/api/contact', rateLimit({ windowMs: 15 * 60 * 1000, limit: 8, standar
   }
 });
 
+// Admin-only lead inbox.
+app.get('/api/contacts', requireAdmin, async (req, res) => {
+  try {
+    const contacts = await Contact.find().sort({ createdAt: -1 }).limit(200).lean();
+    res.json(contacts);
+  } catch (error) {
+    console.error('Get contacts error:', error.message);
+    res.status(500).json({ error: 'Failed to fetch contact enquiries' });
+  }
+});
+
 // Get testimonials
 app.get('/api/testimonials', async (req, res) => {
   try {

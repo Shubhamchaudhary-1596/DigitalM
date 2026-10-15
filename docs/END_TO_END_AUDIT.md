@@ -50,7 +50,7 @@ All code changes for this work are isolated on the `audit/end-to-end-fixes-docs`
 - Added server-side contact validation, request rate limits, restricted CORS, database readiness reporting, optional SMTP lead notifications and a protected contact inbox endpoint.
 - Added configured administrator login using a bcrypt password hash and expiring JWT; removed mock authentication and protected the separate dashboard routes.
 - Added authenticated CRUD endpoints for blog posts, services and portfolio case studies, admin screens that use the API, public read endpoints, a safe plain-text article renderer and a one-time starter-content seed command.
-- Added real dashboard counts, removed unimplemented mock dashboard sections from navigation, added a not-found page, and added initial CI plus email/slug validator unit tests.
+- Added real dashboard counts, removed unimplemented mock dashboard sections from navigation, added a not-found page, added authenticated portfolio CRUD/public case-study routes, and added CI plus email/slug/dependency tests.
 - Added `docs/DEPLOYMENT.md`, environment templates and this audit log.
 
 These are source changes on a review branch. They are not yet production deployed. Email delivery requires valid SMTP configuration. Password reset is intentionally reported as unavailable until an actual reset-email/token workflow is configured. The admin supports blog, service, portfolio and enquiry management; the removed packages/projects/users/profile mock screens are not represented as working features.
@@ -61,7 +61,7 @@ GitHub repository metadata currently reports this repository as **public**. If t
 
 ## Current verification status
 
-This is a source-code audit, not a production sign-off. GitHub Actions run [`38693894309`](https://github.com/Shubhamchaudhary-1596/DigitalM/actions/runs/38693894309) passed for all three projects: public frontend lint/build, admin frontend lint/build, and server tests. The dependency audit reported **0 low, 0 moderate, 0 high and 0 critical advisories** for each project on that tested commit. A blocking CI step now fails if high or critical npm advisories return.
+This is a source-code audit, not a production sign-off. GitHub Actions run [`38694294121`](https://github.com/Shubhamchaudhary-1596/DigitalM/actions/runs/38694294121) passed for all three projects, including the portfolio CRUD changes: public frontend lint/build, admin frontend lint/build, and server tests. The dependency audit reported **0 low, 0 moderate, 0 high and 0 critical advisories** for each project on that tested commit. A blocking CI step now fails if high or critical npm advisories return.
 
 The live domain still could not be verified from this environment: browser retrieval returned a cache-miss error and a direct DNS lookup could not resolve `webzoneo.com`. That does not prove a global outage, but it prevents a reliable production smoke test from this session. No VPS shell or production credentials are connected. Live uptime, actual production environment values, Nginx routing, PM2 process health, database reachability, SMTP delivery, and production security remain **not verified** until checked on the server.
 
@@ -73,7 +73,7 @@ The live domain still could not be verified from this environment: browser retri
 - [x] Run npm audit for all three projects; no advisories were reported on the tested branch commit.
 - [ ] Confirm contact form creates a database record and notification delivery is configured.
 - [ ] Confirm anonymous users cannot access admin pages or privileged API endpoints.
-- [ ] Confirm blog/service create, read, update, delete, and publish behavior persists across reloads.
+- [ ] Confirm blog/service/portfolio create, read, update, delete, and publish behavior persists across reloads.
 - [ ] Confirm every public navigation link resolves to a real page.
 - [ ] Verify canonical URLs, sitemap, robots rules, metadata, structured data, analytics and conversion tracking.
 - [ ] Run `nginx -t` before reloading Nginx; verify PM2 logs and health endpoints after deployment.

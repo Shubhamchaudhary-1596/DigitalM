@@ -44,7 +44,7 @@ const Blog = () => {
               <span className="text-sm font-semibold text-[#0b9488] mb-3">{post.category}</span>
               <h2 className="text-xl font-bold text-[#111827] mb-3">{post.title}</h2>
               <p className="text-gray-600 leading-relaxed mb-5">{post.excerpt}</p>
-              <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-5"><span className="inline-flex items-center gap-1"><Calendar size={15}/>{new Date(post.date + 'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span><span className="inline-flex items-center gap-1"><Clock size={15}/>{post.readTime}</span></div>
+              <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-5"><span className="inline-flex items-center gap-1"><Calendar size={15}/>{new Date(post.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span><span className="inline-flex items-center gap-1"><Clock size={15}/>{post.readTime}</span></div>
               <Link to={'/blog/' + post.slug} className="mt-auto inline-flex items-center gap-2 text-[#0b9488] font-semibold">Read article <ArrowRight size={17}/></Link>
             </article>)}
           </div>

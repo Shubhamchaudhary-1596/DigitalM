@@ -42,6 +42,19 @@ All code changes for this work are isolated on the `audit/end-to-end-fixes-docs`
 - Use explicit tests for build, lint, API validation, auth failure/success, and content CRUD.
 - Do not merge/deploy until the release checklist passes.
 
+## Fixes prepared on `audit/end-to-end-fixes-docs`
+
+- Added Webzoneo page metadata and route-aware titles, descriptions and canonical URLs for service and article details.
+- Replaced fake business metrics, fake testimonials, fictional client logos and unverified case studies with honest service/process content and empty states.
+- Connected the public contact form to the API; success now depends on an accepted API response and errors are shown to the visitor.
+- Added server-side contact validation, request rate limits, restricted CORS, database readiness reporting, optional SMTP lead notifications and a protected contact inbox endpoint.
+- Added configured administrator login using a bcrypt password hash and expiring JWT; removed mock authentication and protected the separate dashboard routes.
+- Added authenticated CRUD endpoints for blog posts and services, admin screens that use the API, public read endpoints, a safe plain-text article renderer and a one-time starter-content seed command.
+- Added real dashboard counts, removed unimplemented mock dashboard sections from navigation, added a not-found page, and added initial CI plus email/slug validator unit tests.
+- Added `docs/DEPLOYMENT.md`, environment templates and this audit log.
+
+These are source changes on a review branch. They are not yet production deployed. Email delivery requires valid SMTP configuration. Password reset is intentionally reported as unavailable until an actual reset-email/token workflow is configured. The admin supports content and enquiry management; the removed packages/projects/users/profile mock screens are not represented as working features.
+
 ## Current verification status
 
 This is a source-code audit, not a production sign-off. The live domain could not be fetched by the available web viewer in this session. Build/test commands have not been run on a local checkout through this GitHub connector, and no VPS shell is connected here. Therefore, live uptime, actual production env values, Nginx routing, PM2 process health, database reachability, email delivery, and production security remain **not verified** until checked on the server.
@@ -50,7 +63,7 @@ This is a source-code audit, not a production sign-off. The live domain could no
 
 - [ ] Confirm the live Webzoneo domain serves the intended build from this repository.
 - [ ] Set production environment variables from the template without committing secrets.
-- [ ] Run install, lint, build and API tests for all three projects.
+- [ ] Run install, lint, build and API tests for all three projects; initial validator unit tests are included in the branch.
 - [ ] Confirm contact form creates a database record and notification delivery is configured.
 - [ ] Confirm anonymous users cannot access admin pages or privileged API endpoints.
 - [ ] Confirm blog/service create, read, update, delete, and publish behavior persists across reloads.

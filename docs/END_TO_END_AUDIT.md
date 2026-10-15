@@ -1,0 +1,61 @@
+# DigitalM / Webzoneo end-to-end audit and repair log
+
+## Scope and safety
+
+This audit covers the React/Vite public site in `my-project/`, the separate React/Vite dashboard in `admin/`, and the Express/Mongoose API in `server/`. The target brand/domain is Webzoneo.com for customers in India and internationally.
+
+All code changes for this work are isolated on the `audit/end-to-end-fixes-docs` branch. Do not deploy this branch directly to production without review and passing the verification checklist. No production database, DNS, Nginx, PM2 process, or server environment has been changed by this repository audit.
+
+## How issues were found
+
+1. **Repository identity and structure:** inspected the default branch, project manifests, route definitions, frontend entry points, API entry point, and configuration files.
+2. **End-to-end flow tracing:** followed user actions from page/component handlers to HTTP requests, backend routes, persistence operations, and user-visible success/error states.
+3. **Authentication tracing:** inspected admin route declarations, the auth context, login handler, and backend endpoints. A frontend-only auth guard is never treated as sufficient protection; protected API handlers must also authorize requests.
+4. **SEO inspection:** checked the HTML document head, SPA route structure, service slugs, blog dates, crawl configuration files, and internal navigation.
+5. **Placeholder and integrity review:** searched for mock tokens, fake data, placeholder contact details, simulated saves, dead links, and unsupported performance claims.
+6. **Verification discipline:** distinguish source-level observations from tests. A source fix is not described as verified until the build, lint, API, or runtime check has actually passed.
+
+## Findings from source inspection
+
+| ID | Area | Finding | Impact | Repair approach |
+|---|---|---|---|---|
+| AUD-01 | Branding | Main source used DigitalMax while the target domain is Webzoneo.com. | Brand and trust mismatch. | Standardize verified brand identity; do not invent contact details. |
+| AUD-02 | SEO | HTML title was `Vite + React`, favicon was Vite default, and page-specific metadata was absent. | Weak search snippets and sharing previews. | Add branded document metadata and route-aware title/description/canonical handling. |
+| AUD-03 | Contact | Contact form only logged data in the browser and showed success without a request. | Leads could be silently lost. | Submit to the API, show success only after a successful response, and show recoverable errors. |
+| AUD-04 | Contact API | Server accepted request body as a Mongoose document with minimal validation; email notification was only a comment. | Validation/spam risk and no notification workflow. | Validate and constrain input; document email-provider configuration as a deployment prerequisite. |
+| AUD-05 | Admin authentication | Auth context seeded a hardcoded admin and `mock-token`; dashboard routes were public. | Unauthorized dashboard access. | Remove mock identity, protect dashboard routes, and require backend authorization for privileged operations. |
+| AUD-06 | Admin API | Auth UI calls login/register/reset endpoints that were not implemented in the inspected server entry point. | Login and recovery cannot complete end to end. | Implement only supported server endpoints and ensure UI does not report success for missing workflows. |
+| AUD-07 | Content management | Blog/service managers and editors used hardcoded mock data and simulated saves. | Changes disappear and don't publish to the public site. | Use persistent API endpoints and a shared content model before describing CMS as functional. |
+| AUD-08 | Service detail pages | Service listing had six slugs but detail data only existed for SEO and PPC. | Four service links lead to “Service Not Found”. | Add complete content for every advertised service or remove unavailable links. |
+| AUD-09 | Credibility | Team bios, case-study metrics, testimonials, pricing, and company statistics were hardcoded and unverified. | Misleading claims risk. | Replace with client-approved evidence; otherwise remove numeric claims. |
+| AUD-10 | Operations | README was effectively empty; env setup, test and deploy instructions were undocumented. | Fragile onboarding and deployment. | Keep setup, env, test, rollback and release steps in versioned docs. |
+
+## Fix approach
+
+- Prefer small, reviewable changes over a rewrite.
+- Keep production `main` unchanged while preparing fixes on a dedicated branch.
+- Avoid inventing company contact information, client names, performance statistics, or secrets.
+- Keep success messages tied to actual server responses.
+- Validate inputs on the server even when HTML form validation exists.
+- Protect privileged API routes at the server; UI route guards are a usability layer only.
+- Keep secrets in environment variables and never commit real `.env` files.
+- Use explicit tests for build, lint, API validation, auth failure/success, and content CRUD.
+- Do not merge/deploy until the release checklist passes.
+
+## Current verification status
+
+This is a source-code audit, not a production sign-off. The live domain could not be fetched by the available web viewer in this session. Build/test commands have not been run on a local checkout through this GitHub connector, and no VPS shell is connected here. Therefore, live uptime, actual production env values, Nginx routing, PM2 process health, database reachability, email delivery, and production security remain **not verified** until checked on the server.
+
+## Release checklist
+
+- [ ] Confirm the live Webzoneo domain serves the intended build from this repository.
+- [ ] Set production environment variables from the template without committing secrets.
+- [ ] Run install, lint, build and API tests for all three projects.
+- [ ] Confirm contact form creates a database record and notification delivery is configured.
+- [ ] Confirm anonymous users cannot access admin pages or privileged API endpoints.
+- [ ] Confirm blog/service create, read, update, delete, and publish behavior persists across reloads.
+- [ ] Confirm every public navigation link resolves to a real page.
+- [ ] Verify canonical URLs, sitemap, robots rules, metadata, structured data, analytics and conversion tracking.
+- [ ] Run `nginx -t` before reloading Nginx; verify PM2 logs and health endpoints after deployment.
+- [ ] Smoke-test homepage, all services, blog details, contact submission, admin login/logout and mobile layouts.
+- [ ] Keep a rollback build and document the release commit SHA.

@@ -5,7 +5,7 @@ This repository contains the public Webzoneo website, an administrator dashboard
 ## Repository layout
 
 - `my-project/` — public React/Vite website, service pages, editorial pages and contact form.
-- `admin/` — separate authenticated dashboard for blog posts, services and contact enquiries.
+- `admin/` — separate authenticated dashboard for blog posts, services, portfolio case studies and contact enquiries.
 - `server/` — Express API, MongoDB persistence, configured administrator login, public content endpoints and protected content-management endpoints.
 - `docs/END_TO_END_AUDIT.md` — issue discovery method, findings, fix rationale and verification checklist.
 - `docs/DEPLOYMENT.md` — environment setup, build, deployment, smoke-test and rollback instructions.

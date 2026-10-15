@@ -1,11 +1,8 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import { api } from '../lib/api';
 
 const AuthContext = createContext();
-export const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '' });
-const storedToken = localStorage.getItem('token');
-if (storedToken) api.defaults.headers.common.Authorization = 'Bearer ' + storedToken;
-
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error('useAuth must be used within an AuthProvider');
@@ -17,7 +14,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     try { return JSON.parse(localStorage.getItem('admin-user') || 'null'); } catch { return null; }
   });
-  const [loading, setLoading] = useState(false);
+  const loading = false;
 
   useEffect(() => {
     if (token) api.defaults.headers.common.Authorization = 'Bearer ' + token;

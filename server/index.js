@@ -130,9 +130,28 @@ app.post('/api/contact', rateLimit({ windowMs: 15 * 60 * 1000, limit: 8, standar
     const contact = new Contact(input);
     await contact.save();
     
-    // Here you would typically send an email notification
-    // using nodemailer or another email service
-    
+    if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS && process.env.CONTACT_TO_EMAIL && process.env.CONTACT_FROM_EMAIL) {
+      try {
+        const transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port: Number(process.env.SMTP_PORT || 587),
+          secure: process.env.SMTP_SECURE === 'true',
+          auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+        });
+        await transporter.sendMail({
+          from: process.env.CONTACT_FROM_EMAIL,
+          to: process.env.CONTACT_TO_EMAIL,
+          replyTo: contact.email,
+          subject: 'New Webzoneo website enquiry',
+          text: ['Name: ' + contact.name, 'Email: ' + contact.email, 'Phone: ' + (contact.phone || 'Not provided'), 'Company: ' + (contact.company || 'Not provided'), 'Service: ' + (contact.service || 'Not provided'), 'Budget: ' + (contact.budget || 'Not provided'), 'Timeline: ' + (contact.timeline || 'Not provided'), '', contact.message].join('\n')
+        });
+      } catch (mailError) {
+        console.error('Contact saved but notification email failed:', mailError.message);
+      }
+    } else {
+      console.warn('Contact saved, but SMTP notification is not configured.');
+    }
+
     res.status(201).json({ 
       message: 'Contact form submitted successfully',
       id: contact._id 

@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '' });
+export const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '' });
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }) => {
       const response = await api.post('/api/auth/login', { email, password });
       const { token: newToken, user: userData } = response.data;
       if (!newToken || !userData || userData.role !== 'admin') return { success: false, error: 'The server returned an invalid administrator session.' };
+      api.defaults.headers.common.Authorization = 'Bearer ' + newToken;
       setToken(newToken);
       setUser(userData);
       localStorage.setItem('token', newToken);

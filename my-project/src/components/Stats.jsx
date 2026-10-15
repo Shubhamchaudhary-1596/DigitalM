@@ -15,7 +15,7 @@ const Stats = () => (
         <p className="text-gray-300">Our working approach keeps the focus on customer needs, practical execution and transparent measurement.</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {focus.map(({icon: Icon, title, text}) => <article key={title} className="rounded-xl border border-white/10 bg-white/5 p-6"><Icon size={30} className="text-[#5eead4] mb-4"/><h3 className="text-xl font-semibold mb-2">{title}</h3><p className="text-gray-300 leading-relaxed">{text}</p></article>)}
+        {focus.map((item) => { const Icon = item.icon; return <article key={item.title} className="rounded-xl border border-white/10 bg-white/5 p-6"><Icon size={30} className="text-[#5eead4] mb-4"/><h3 className="text-xl font-semibold mb-2">{item.title}</h3><p className="text-gray-300 leading-relaxed">{item.text}</p></article>; })}
       </div>
     </div>
   </section>

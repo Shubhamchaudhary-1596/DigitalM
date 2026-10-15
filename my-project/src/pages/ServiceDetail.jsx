@@ -19,7 +19,7 @@ const ServiceDetail = () => {
 
   useEffect(() => {
     let cancelled = false;
-    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\\/$/, '');
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
     fetch(apiBase + '/api/services/' + encodeURIComponent(slug)).then((response) => response.ok ? response.json() : Promise.reject(new Error('Service not found in API'))).then((item) => { if (!cancelled) setApiService(item); }).catch(() => { if (!cancelled) setApiService(null); });
     return () => { cancelled = true; };
   }, [slug]);

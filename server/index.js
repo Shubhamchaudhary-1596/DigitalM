@@ -261,7 +261,7 @@ app.post('/api/contact', rateLimit({ windowMs: 15 * 60 * 1000, limit: 8, standar
       input[field] = typeof value === 'string' ? value.trim() : '';
     }
     if (!input.name || input.name.length > 120) return res.status(400).json({ error: 'Name is required and must be under 120 characters' });
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email) || input.email.length > 254) return res.status(400).json({ error: 'A valid email address is required' });
+    if (!isValidEmail(input.email)) return res.status(400).json({ error: 'A valid email address is required' });
     if (!input.message || input.message.length > 5000) return res.status(400).json({ error: 'Message is required and must be under 5000 characters' });
     for (const field of fields) if (input[field].length > (field === 'message' ? 5000 : 500)) return res.status(400).json({ error: field + ' is too long' });
     const contact = new Contact(input);
@@ -362,7 +362,7 @@ app.get('/api/portfolio', async (req, res) => {
 app.post('/api/subscribe', rateLimit({ windowMs: 60 * 60 * 1000, limit: 5, standardHeaders: true, legacyHeaders: false }), async (req, res) => {
   try {
     const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
+    if (!isValidEmail(email)) {
       return res.status(400).json({ error: 'A valid email address is required' });
     }
     try {

@@ -59,7 +59,7 @@ const Services = () => {
 
   useEffect(() => {
     document.title = 'Digital Marketing Services | Webzoneo';
-    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\\/$/, '');
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
     fetch(apiBase + '/api/services').then((response) => response.ok ? response.json() : Promise.reject(new Error('API unavailable'))).then((items) => {
       if (Array.isArray(items) && items.length) {
         const icons = { seo: Search, ppc: Target, 'social-media': Users, 'web-development': Code, 'content-marketing': PenTool, analytics: BarChart3 };

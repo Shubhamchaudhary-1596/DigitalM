@@ -107,7 +107,6 @@ const Layout = () => {
             </div>
           </div>
           <div style={{ marginTop: '0.75rem' }}>
-    </Link>
             <button
               onClick={handleLogout}
               style={{

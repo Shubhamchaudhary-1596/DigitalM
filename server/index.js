@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 const nodemailer = require('nodemailer');
+const { isValidEmail, isValidSlug } = require('./lib/validation');
 require('dotenv').config();
 
 const app = express();
@@ -172,7 +173,7 @@ app.get('/api/services/:slug', async (req, res) => {
 });
 
 // Authenticated content management API.
-const validateSlug = (slug) => typeof slug === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+const validateSlug = isValidSlug;
 app.get('/api/admin/blogs', requireAdmin, async (req, res) => {
   try { res.json(await Blog.find().sort({ updatedAt: -1 }).lean()); }
   catch (error) { res.status(500).json({ error: 'Failed to fetch blog posts' }); }

@@ -16,7 +16,7 @@ const Testimonials = () => (
         <p className="text-lg text-gray-600">We publish customer testimonials and case-study metrics only when they are approved and can be substantiated. Until then, here is the approach we commit to for every engagement.</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {approach.map(({icon: Icon, title, text}) => <article key={title} className="bg-white rounded-2xl p-7 shadow-sm"><Icon size={30} className="text-[#0ea5a4] mb-4"/><h3 className="text-xl font-semibold mb-2">{title}</h3><p className="text-gray-600 leading-relaxed">{text}</p></article>)}
+        {approach.map((item) => { const Icon = item.icon; return <article key={item.title} className="bg-white rounded-2xl p-7 shadow-sm"><Icon size={30} className="text-[#0ea5a4] mb-4"/><h3 className="text-xl font-semibold mb-2">{item.title}</h3><p className="text-gray-600 leading-relaxed">{item.text}</p></article>; })}
       </div>
       <div className="text-center mt-10"><Link to="/contact" className="inline-flex bg-[#0ea5a4] text-white px-7 py-3 rounded-lg font-semibold hover:bg-[#0b9488]">Discuss your goals</Link></div>
     </div>

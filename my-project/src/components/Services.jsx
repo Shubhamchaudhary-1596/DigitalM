@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Search, Target, Users, Code, PenTool, BarChart3 } from 'lucide-react';
 import { Link } from 'react-router-dom';

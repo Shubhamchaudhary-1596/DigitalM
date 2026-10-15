@@ -57,13 +57,16 @@ These are source changes on a review branch. They are not yet production deploye
 
 ## Current verification status
 
-This is a source-code audit, not a production sign-off. The live domain could not be fetched by the available web viewer in this session. Build/test commands have not been run on a local checkout through this GitHub connector, and no VPS shell is connected here. Therefore, live uptime, actual production env values, Nginx routing, PM2 process health, database reachability, email delivery, and production security remain **not verified** until checked on the server.
+This is a source-code audit, not a production sign-off. GitHub Actions run [`38693894309`](https://github.com/Shubhamchaudhary-1596/DigitalM/actions/runs/38693894309) passed for all three projects: public frontend lint/build, admin frontend lint/build, and server tests. The dependency audit reported **0 low, 0 moderate, 0 high and 0 critical advisories** for each project on that tested commit. A blocking CI step now fails if high or critical npm advisories return.
+
+The live domain still could not be verified from this environment: browser retrieval returned a cache-miss error and a direct DNS lookup could not resolve `webzoneo.com`. That does not prove a global outage, but it prevents a reliable production smoke test from this session. No VPS shell or production credentials are connected. Live uptime, actual production environment values, Nginx routing, PM2 process health, database reachability, SMTP delivery, and production security remain **not verified** until checked on the server.
 
 ## Release checklist
 
 - [ ] Confirm the live Webzoneo domain serves the intended build from this repository.
 - [ ] Set production environment variables from the template without committing secrets.
-- [ ] Run install, lint, build and API tests for all three projects; initial validator unit tests are included in the branch.
+- [x] Run CI lint/build for both frontends and API unit/dependency tests; all passed on the tested branch commit.
+- [x] Run npm audit for all three projects; no advisories were reported on the tested branch commit.
 - [ ] Confirm contact form creates a database record and notification delivery is configured.
 - [ ] Confirm anonymous users cannot access admin pages or privileged API endpoints.
 - [ ] Confirm blog/service create, read, update, delete, and publish behavior persists across reloads.

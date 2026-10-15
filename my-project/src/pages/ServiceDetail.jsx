@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
@@ -14,7 +14,15 @@ const serviceData = {
 
 const ServiceDetail = () => {
   const { slug } = useParams();
-  const service = serviceData[slug];
+  const [apiService, setApiService] = useState(null);
+  const service = apiService ? { ...(serviceData[slug] || {}), title: apiService.title, description: apiService.description, features: Array.isArray(apiService.features) && apiService.features.length ? apiService.features : (serviceData[slug]?.features || []) } : serviceData[slug];
+
+  useEffect(() => {
+    let cancelled = false;
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\\/$/, '');
+    fetch(apiBase + '/api/services/' + encodeURIComponent(slug)).then((response) => response.ok ? response.json() : Promise.reject(new Error('Service not found in API'))).then((item) => { if (!cancelled) setApiService(item); }).catch(() => { if (!cancelled) setApiService(null); });
+    return () => { cancelled = true; };
+  }, [slug]);
 
   useEffect(() => {
     document.title = service ? service.title + ' | Webzoneo' : 'Service Not Found | Webzoneo';

@@ -20,8 +20,7 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          {/* All routes are now public for development */}
-          <Route path="/" element={<Layout />}>
+          <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="blogs" element={<BlogManager />} />
@@ -42,7 +41,7 @@ function App() {
 
           {/* Public routes for auth pages */}
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/register" element={<Navigate to="/login" replace />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* Catch all */}

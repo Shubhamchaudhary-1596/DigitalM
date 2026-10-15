@@ -402,7 +402,7 @@ app.use((err, req, res, next) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  console.log(`MongoDB connected to: ${process.env.MONGODB_URI || 'mongodb://localhost:27017/digitalmax'}`);
+  console.log('MongoDB configured: ' + (process.env.MONGODB_URI ? 'custom URI' : 'local default URI'));
 });
 
 module.exports = app;

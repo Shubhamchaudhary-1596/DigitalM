@@ -44,7 +44,7 @@ const BlogPost = () => {
           <p className="text-sm font-semibold uppercase tracking-widest text-[#5eead4] mb-4">{post.category}</p>
           <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-6">{post.title}</h1>
           <p className="text-lg text-gray-300 leading-relaxed mb-6">{post.excerpt}</p>
-          <div className="flex flex-wrap gap-5 text-sm text-gray-300"><span>{post.author}</span><span className="inline-flex items-center gap-2"><Calendar size={15}/>{new Date(post.date + 'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}</span><span className="inline-flex items-center gap-2"><Clock size={15}/>{post.readTime}</span></div>
+          <div className="flex flex-wrap gap-5 text-sm text-gray-300"><span>{post.author}</span><span className="inline-flex items-center gap-2"><Calendar size={15}/>{new Date(post.date).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}</span><span className="inline-flex items-center gap-2"><Clock size={15}/>{post.readTime}</span></div>
         </div>
       </header>
       <div className="max-w-3xl mx-auto px-4 py-12">

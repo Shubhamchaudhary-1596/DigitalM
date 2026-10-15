@@ -2,6 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
@@ -9,15 +12,13 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(helmet());
-app.use(cors());
-app.use(express.json());
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:5174').split(',').map((origin) => origin.trim()).filter(Boolean);
+app.use(cors({ origin(origin, callback) { if (!origin || allowedOrigins.includes(origin)) return callback(null, true); return callback(new Error('Origin is not allowed by CORS')); } }));
+app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/digitalmax', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/webzoneo').then(() => console.log('MongoDB connected')).catch((error) => { console.error('MongoDB connection failed:', error.message); process.exit(1); });
 
 // Models
 const Contact = mongoose.model('Contact', {
@@ -74,10 +75,56 @@ const Client = mongoose.model('Client', {
 
 // Routes
 
-// Contact form submission
-app.post('/api/contact', async (req, res) => {
+
+const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false });
+const requireAdmin = (req, res, next) => {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : '';
+  if (!token || !process.env.JWT_SECRET) return res.status(401).json({ error: 'Authentication required' });
   try {
-    const contact = new Contact(req.body);
+    const payload = jwt.verify(token, process.env.JWT_SECRET, { issuer: 'webzoneo-api', audience: 'webzoneo-admin' });
+    if (payload.role !== 'admin') return res.status(403).json({ error: 'Administrator access required' });
+    req.admin = payload;
+    return next();
+  } catch {
+    return res.status(401).json({ error: 'Invalid or expired token' });
+  }
+};
+
+app.post('/api/auth/login', loginLimiter, async (req, res) => {
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  const password = typeof req.body?.password === 'string' ? req.body.password : '';
+  if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD_HASH || !process.env.JWT_SECRET) return res.status(503).json({ error: 'Admin authentication is not configured on the server' });
+  try {
+    const matches = email === process.env.ADMIN_EMAIL.trim().toLowerCase() && await bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH);
+    if (!matches) return res.status(401).json({ error: 'Invalid email or password' });
+    const user = { id: 'configured-admin', name: 'Administrator', email, role: 'admin' };
+    const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '8h', issuer: 'webzoneo-api', audience: 'webzoneo-admin' });
+    return res.json({ token, user });
+  } catch (error) {
+    console.error('Admin login error:', error.message);
+    return res.status(500).json({ error: 'Unable to sign in at this time' });
+  }
+});
+app.post('/api/auth/register', (req, res) => res.status(403).json({ error: 'Public registration is disabled. Ask the site administrator to provision access.' }));
+app.post('/api/auth/forgot-password', (req, res) => res.status(503).json({ error: 'Password reset email is not configured. Contact the site administrator.' }));
+
+// Contact form submission
+app.post('/api/contact', rateLimit({ windowMs: 15 * 60 * 1000, limit: 8, standardHeaders: true, legacyHeaders: false }), async (req, res) => {
+  try {
+
+    const fields = ['name', 'email', 'phone', 'company', 'service', 'budget', 'timeline', 'message'];
+    const input = {};
+    for (const field of fields) {
+      const value = req.body?.[field];
+      if (value !== undefined && typeof value !== 'string') return res.status(400).json({ error: 'Invalid ' + field + ' value' });
+      input[field] = typeof value === 'string' ? value.trim() : '';
+    }
+    if (!input.name || input.name.length > 120) return res.status(400).json({ error: 'Name is required and must be under 120 characters' });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email) || input.email.length > 254) return res.status(400).json({ error: 'A valid email address is required' });
+    if (!input.message || input.message.length > 5000) return res.status(400).json({ error: 'Message is required and must be under 5000 characters' });
+    for (const field of fields) if (input[field].length > (field === 'message' ? 5000 : 500)) return res.status(400).json({ error: field + ' is too long' });
+    const contact = new Contact(input);
     await contact.save();
     
     // Here you would typically send an email notification
@@ -89,7 +136,7 @@ app.post('/api/contact', async (req, res) => {
     });
   } catch (error) {
     console.error('Contact submission error:', error);
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: 'Unable to submit this enquiry. Check the fields and try again.' });
   }
 });
 
@@ -162,7 +209,8 @@ app.post('/api/subscribe', async (req, res) => {
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  const dbReady = mongoose.connection.readyState === 1;
+  res.status(dbReady ? 200 : 503).json({ status: dbReady ? 'OK' : 'DEGRADED', database: dbReady ? 'connected' : 'disconnected', timestamp: new Date().toISOString() });
 });
 
 // Default route

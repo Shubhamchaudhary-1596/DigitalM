@@ -10,8 +10,8 @@ const BlogPost = () => {
 
   useEffect(() => {
     let cancelled = false;
-    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\\/$/, '');
-    fetch(apiBase + '/api/blogs/' + encodeURIComponent(slug)).then((response) => response.ok ? response.json() : Promise.reject(new Error('Article not found in API'))).then((item) => { if (!cancelled) setApiPost({ ...item, date: item.publishedAt || item.createdAt || item.date, readTime: item.readTime || '5 min read', sections: typeof item.content === 'string' ? [{ heading: 'Article', paragraphs: item.content.split(/\\n\\s*\\n/).filter(Boolean) }] : [] }); }).catch(() => { if (!cancelled) setApiPost(null); });
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+    fetch(apiBase + '/api/blogs/' + encodeURIComponent(slug)).then((response) => response.ok ? response.json() : Promise.reject(new Error('Article not found in API'))).then((item) => { if (!cancelled) setApiPost({ ...item, date: item.publishedAt || item.createdAt || item.date, readTime: item.readTime || '5 min read', sections: typeof item.content === 'string' ? [{ heading: 'Article', paragraphs: item.content.split(/\n\s*\n/).filter(Boolean) }] : [] }); }).catch(() => { if (!cancelled) setApiPost(null); });
     return () => { cancelled = true; };
   }, [slug]);
 

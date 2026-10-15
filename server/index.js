@@ -64,7 +64,8 @@ const PortfolioItem = mongoose.model('PortfolioItem', {
   featured: { type: Boolean, default: false },
   published: { type: Boolean, default: false },
   slug: { type: String, required: true, unique: true },
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now },,
+  updatedAt: { type: Date, default: Date.now }
 });
 
 const Subscriber = mongoose.model('Subscriber', { email: { type: String, required: true, unique: true, lowercase: true, trim: true }, createdAt: { type: Date, default: Date.now } });

@@ -62,6 +62,7 @@ const PortfolioItem = mongoose.model('PortfolioItem', {
   solutions: [String],
   timeline: String,
   featured: { type: Boolean, default: false },
+  published: { type: Boolean, default: false },
   slug: { type: String, required: true, unique: true },
   createdAt: { type: Date, default: Date.now },
 });
@@ -249,6 +250,52 @@ app.delete('/api/admin/services/:id', requireAdmin, async (req, res) => {
   } catch (error) { res.status(400).json({ error: 'Unable to delete service' }); }
 });
 
+// Authenticated portfolio management API.
+app.get('/api/admin/portfolio', requireAdmin, async (req, res) => {
+  try { res.json(await PortfolioItem.find().sort({ createdAt: -1 }).lean()); }
+  catch (error) { res.status(500).json({ error: 'Failed to fetch portfolio items' }); }
+});
+app.post('/api/admin/portfolio', requireAdmin, async (req, res) => {
+  try {
+    const data = req.body || {};
+    if (!data.title || !data.client || !data.category || !data.description || !validateSlug(data.slug)) return res.status(400).json({ error: 'Title, client, category, description and valid slug are required' });
+    const item = await PortfolioItem.create({
+      title: data.title, client: data.client, slug: data.slug, category: data.category,
+      industry: data.industry || '', description: data.description, image: data.image || '',
+      timeline: data.timeline || '', featured: Boolean(data.featured), published: Boolean(data.published),
+      challenges: Array.isArray(data.challenges) ? data.challenges.filter((v) => typeof v === 'string').slice(0, 30) : [],
+      solutions: Array.isArray(data.solutions) ? data.solutions.filter((v) => typeof v === 'string').slice(0, 30) : [],
+      results: Array.isArray(data.results) ? data.results.filter((v) => v && typeof v.label === 'string' && typeof v.value === 'string').slice(0, 20) : []
+    });
+    res.status(201).json(item);
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ error: 'That case-study slug is already in use' });
+    res.status(400).json({ error: 'Unable to create case study' });
+  }
+});
+app.put('/api/admin/portfolio/:id', requireAdmin, async (req, res) => {
+  try {
+    const data = req.body || {};
+    if (data.slug !== undefined && !validateSlug(data.slug)) return res.status(400).json({ error: 'Slug must contain lowercase letters, numbers and hyphens only' });
+    const allowed = ['title','client','slug','category','industry','description','image','timeline','featured','published','challenges','solutions','results'];
+    const update = {};
+    for (const key of allowed) if (data[key] !== undefined) update[key] = data[key];
+    const item = await PortfolioItem.findByIdAndUpdate(req.params.id, { ...update, updatedAt: new Date() }, { new: true, runValidators: true });
+    if (!item) return res.status(404).json({ error: 'Case study not found' });
+    res.json(item);
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ error: 'That case-study slug is already in use' });
+    res.status(400).json({ error: 'Unable to update case study' });
+  }
+});
+app.delete('/api/admin/portfolio/:id', requireAdmin, async (req, res) => {
+  try {
+    const item = await PortfolioItem.findByIdAndDelete(req.params.id);
+    if (!item) return res.status(404).json({ error: 'Case study not found' });
+    res.status(204).end();
+  } catch (error) { res.status(400).json({ error: 'Unable to delete case study' }); }
+});
+
 // Contact form submission
 app.post('/api/contact', rateLimit({ windowMs: 15 * 60 * 1000, limit: 8, standardHeaders: true, legacyHeaders: false }), async (req, res) => {
   try {
@@ -336,11 +383,21 @@ app.get('/api/clients', async (req, res) => {
   }
 });
 
+app.get('/api/portfolio/:slug', async (req, res) => {
+  try {
+    const item = await PortfolioItem.findOne({ slug: req.params.slug, published: true }).lean();
+    if (!item) return res.status(404).json({ error: 'Case study not found' });
+    res.json(item);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch case study' });
+  }
+});
+
 // Get portfolio items
 app.get('/api/portfolio', async (req, res) => {
   try {
     const { category, featured } = req.query;
-    let query = {};
+    let query = { published: true };
     
     if (category && category !== 'all') {
       query.category = category;

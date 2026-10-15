@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Search, Target, Users, Code, PenTool, BarChart3, ArrowRight } from 'lucide-react';
@@ -10,7 +10,7 @@ const Services = () => {
     threshold: 0.1
   });
 
-  const services = [
+  const defaultServices = [
     {
       icon: Search,
       title: 'SEO Optimization',
@@ -54,6 +54,19 @@ const Services = () => {
       features: ['Google Analytics Setup', 'Custom Dashboards', 'Performance Tracking', 'ROI Analysis', 'Conversion Tracking', 'Monthly Reports'],
     }
   ];
+
+  const [services, setServices] = useState(defaultServices);
+
+  useEffect(() => {
+    document.title = 'Digital Marketing Services | Webzoneo';
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\\/$/, '');
+    fetch(apiBase + '/api/services').then((response) => response.ok ? response.json() : Promise.reject(new Error('API unavailable'))).then((items) => {
+      if (Array.isArray(items) && items.length) {
+        const icons = { seo: Search, ppc: Target, 'social-media': Users, 'web-development': Code, 'content-marketing': PenTool, analytics: BarChart3 };
+        setServices(items.map((item) => ({ ...item, icon: icons[item.slug] || icons[item.category] || Search, features: item.features || [] })));
+      }
+    }).catch(() => { /* Keep bundled service descriptions if the API is unavailable. */ });
+  }, []);
 
   return (
     <div className="pt-20">

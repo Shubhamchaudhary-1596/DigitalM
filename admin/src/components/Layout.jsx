@@ -108,23 +108,7 @@ const Layout = () => {
             </div>
           </div>
           <div style={{ marginTop: '0.75rem' }}>
-            <Link
-              to="/profile"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '0.5rem 0.75rem',
-                fontSize: '0.875rem',
-                color: '#374151',
-                textDecoration: 'none',
-                borderRadius: '0.375rem',
-                marginBottom: '0.25rem'
-              }}
-              onClick={() => setSidebarOpen(false)}
-            >
-              <User style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} />
-              Profile
-            </Link>
+    </Link>
             <button
               onClick={handleLogout}
               style={{

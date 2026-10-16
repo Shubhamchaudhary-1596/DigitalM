@@ -1,26 +1,3 @@
-<<<<<<< HEAD
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import cookieParser from 'cookie-parser';
-import morgan from 'morgan';
-import helmet from 'helmet';
-import connectDB from './config/connectDb.js';
-import userRouter from './routes/user.route.js';
-import leadRouter from './routes/lead.route.js';
-import blogRouter from './routes/blog.route.js';
-import categoryRouter from './routes/category.route.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-// Get current directory path
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-
-// Load environment variables from .env file
-dotenv.config();
-=======
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -31,29 +8,10 @@ const rateLimit = require('express-rate-limit');
 const nodemailer = require('nodemailer');
 const { isValidEmail, isValidSlug } = require('./lib/validation');
 require('dotenv').config();
->>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-<<<<<<< HEAD
-
-app.use(cors());
-app.use(express.json());
-app.use(cookieParser());
-app.use(morgan('dev'));
-app.use(helmet({
-    crossOriginResourcePolicy :false
-}))
-
-// Serve uploaded files statically
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Simple route to check server is working
-app.get("/", (request, response) => {
-  response.json({
-      message: `Hello World! Server is running on port ${process.env.PORT}`
-=======
 // Middleware
 app.use(helmet());
 const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:5174').split(',').map((origin) => origin.trim()).filter(Boolean);
@@ -513,30 +471,15 @@ app.get('/', (req, res) => {
     message: 'Webzoneo API Server',
     version: '1.0.0',
     status: 'Running'
->>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
   });
 });
 
-app.use('/api/user', userRouter)
-app.use('/api/lead', leadRouter)
-app.use('/api/blog', blogRouter)
-app.use('/api/category', categoryRouter)
-
-// Connect to the database and start the server
-import UserModel from './models/user.model.js';
-import CategoryModel from './models/category.model.js';
-import BlogModel from './models/blog.model.js';
-import LeadModel from './models/lead.model.js';
-
-connectDB().then(() => {
-    
-  app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-  });
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
-<<<<<<< HEAD
-=======
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -544,4 +487,3 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
->>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e

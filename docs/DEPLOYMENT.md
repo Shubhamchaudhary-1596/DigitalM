@@ -22,8 +22,8 @@ This guide documents a safe release flow for the existing `my-project/`, `admin/
 Create private environment files on the server from the checked-in example templates. At minimum, review:
 - `PORT`
 - `MONGODB_URI`
-- `JWT_SECRET` (long, random, private value)
-- `ADMIN_SETUP_KEY` (one-time initial administrator setup secret; rotate/remove after use)
+- `JWT_SECRET` (long, random, private value for Webzoneo admin API sessions)
+- `SECRET_KEY_ACCESS_TOKEN` and `SECRET_KEY_REFRESH_TOKEN` (separate, long, random values for legacy customer-account tokens)
 - `CORS_ORIGINS` (comma-separated exact trusted frontend origins)
 - `VITE_API_URL` for each Vite build, if the frontend is served separately from the API
 - email provider settings before enabling email notifications or password resets
@@ -43,7 +43,7 @@ unset ADMIN_INITIAL_PASSWORD
 ```
 
 Avoid putting plaintext credentials in source control, shared logs or shell command arguments.
-- Generate a long random JWT secret, for example with `openssl rand -base64 48`, and store it as JWT_SECRET. Restart the API after updating the environment.
+- Generate separate long random secrets, for example with `openssl rand -base64 48`, for `JWT_SECRET`, `SECRET_KEY_ACCESS_TOKEN`, and `SECRET_KEY_REFRESH_TOKEN`. Never reuse one value for all three. Restart the API after updating the environment.
 - After verifying the MongoDB URI and taking a backup, run `npm run seed` once from `server/`. The seed command inserts starter services and editorial articles only when those collections are empty; it skips non-empty collections. Review all starter content in the admin UI before treating it as approved publication copy.
 - Configure SMTP values if email notifications are required. Contact records are still saved when SMTP is not configured, but the API logs that notifications are unavailable.
 

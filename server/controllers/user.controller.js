@@ -511,14 +511,20 @@ export async function updateUserDetails(request, response) {
       },
       { new: true }
     );
-    if (email !== userExist.email) {
-      //Send verification email
-      await sendEmailFun({
-        sendTo: email,
-        subject: "Verify email from Ecommerce App",
-        text: "",
-        html: VerificationEmail(name, verifyCode),
-      });
+    if (typeof email === "string" && email.trim().toLowerCase() !== String(userExist.email || "").toLowerCase()) {
+      const verifyCode = String(Math.floor(100000 + Math.random() * 900000));
+      updateUser.otp = verifyCode;
+      updateUser.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+      await updateUser.save();
+      const emailSent = await sendEmailFun(
+        email.trim(),
+        "Verify your Webzoneo email address",
+        "Your email verification code is " + verifyCode + ". It expires in 10 minutes.",
+        "<p>Your email verification code is <strong>" + verifyCode + "</strong>.</p><p>It expires in 10 minutes.</p>"
+      );
+      if (!emailSent) {
+        return response.status(503).json({ message: "Profile updated, but the verification email could not be sent. Check SMTP settings and retry verification.", error: true, success: false });
+      }
     }
     return response.json({
       message: "User Updated successfully",
@@ -962,13 +968,16 @@ export async function approveAdminRequest(request, response) {
 
     await user.save();
 
-    // Send OTP email after approval
-    await sendEmailFun(
+    // Send a verification code using the configured mail transport.
+    const emailSent = await sendEmailFun(
       user.email,
-      "Verify your email from Ecommerce App",
-      "",
-      VerificationEmail(user.name, verifyCode)
+      "Webzoneo administrator access approved",
+      "Your administrator access was approved. Your verification code is " + verifyCode + ". It expires in 10 minutes.",
+      "<p>Your administrator access was approved.</p><p>Your verification code is <strong>" + verifyCode + "</strong>. It expires in 10 minutes.</p>"
     );
+    if (!emailSent) {
+      return response.status(503).json({ message: "Admin access was updated, but the verification email could not be sent. Check SMTP settings.", error: true, success: false });
+    }
 
     return response.status(200).json({
       message: "Admin request approved successfully and OTP sent",

@@ -5,13 +5,11 @@ import {
   LayoutDashboard,
   FileText,
   Settings,
-  Package,
-  FolderOpen,
-  Users,
+  Inbox,
+  Briefcase,
   User,
   LogOut,
   Menu,
-  X,
   Bell
 } from 'lucide-react';
 
@@ -25,9 +23,8 @@ const Layout = () => {
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Blogs', href: '/blogs', icon: FileText },
     { name: 'Services', href: '/services', icon: Settings },
-    { name: 'Packages', href: '/packages', icon: Package },
-    { name: 'Projects', href: '/projects', icon: FolderOpen },
-    { name: 'Users', href: '/users', icon: Users, adminOnly: true },
+    { name: 'Enquiries', href: '/contacts', icon: Inbox },
+    { name: 'Portfolio', href: '/portfolio', icon: Briefcase },
   ];
 
   const handleLogout = () => {
@@ -61,7 +58,7 @@ const Layout = () => {
       {/* Sidebar */}
       <div className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="logo">
-          DigitalMax Admin
+          Webzoneo Admin
         </div>
 
         {/* Navigation */}
@@ -112,23 +109,6 @@ const Layout = () => {
             </div>
           </div>
           <div style={{ marginTop: '0.75rem' }}>
-            <Link
-              to="/profile"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '0.5rem 0.75rem',
-                fontSize: '0.875rem',
-                color: '#374151',
-                textDecoration: 'none',
-                borderRadius: '0.375rem',
-                marginBottom: '0.25rem'
-              }}
-              onClick={() => setSidebarOpen(false)}
-            >
-              <User style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} />
-              Profile
-            </Link>
             <button
               onClick={handleLogout}
               style={{

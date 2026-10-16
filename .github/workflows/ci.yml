@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "audit/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  frontend-and-api:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [my-project, admin, server]
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - name: Report dependency advisories
+        run: |
+          npm audit --json > /tmp/npm-audit.json || true
+          node -e 'const a=require("/tmp/npm-audit.json"); console.log(JSON.stringify({vulnerabilities:a.metadata?.vulnerabilities, packages:Object.entries(a.vulnerabilities||{}).map(([name,v])=>({name,severity:v.severity,range:v.range,fixAvailable:v.fixAvailable}))}, null, 2))'
+      - name: Fail on high or critical advisories
+        run: npm audit --audit-level=high
+      - if: matrix.project != 'server'
+        run: npm run lint
+      - if: matrix.project != 'server'
+        run: npm run build
+      - if: matrix.project == 'server'
+        run: npm test

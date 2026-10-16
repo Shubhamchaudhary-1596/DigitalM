@@ -7,6 +7,23 @@ on:
     branches: [main]
 
 jobs:
+  repository-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject unresolved merge markers
+        run: |
+          if git grep -n -E '^(<<<<<<< |=======|>>>>>>> |\\|\\|\\|\\|\\|\\| )' -- ':!package-lock.json'; then
+            echo 'Unresolved merge-conflict markers found.'
+            exit 1
+          fi
+      - name: Reject committed dependency directories
+        run: |
+          if git ls-files | grep -E '(^|/)node_modules/'; then
+            echo 'node_modules must not be committed.'
+            exit 1
+          fi
+
   frontend-and-api:
     runs-on: ubuntu-latest
     strategy:

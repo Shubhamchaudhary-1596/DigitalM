@@ -5,6 +5,7 @@ import generatedAccessToken from "../utils/generatedAccessToken.js";
 import generateRefreshToken from "../utils/generatedRefreshToken.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+import sendEmailFun from "../config/sendEmail.js";
 
 // Configuration
 cloudinary.config({
@@ -163,7 +164,7 @@ export async function adminRegisterUserController(request, response) {
 export async function verifyEmailController(request, response) {
   try {
     const { email, otp } = request.body;
-    const user = await UserModel.findOne({ email: email });
+    const user = await UserModel.findOne({ email: email }).select('+otp +otpExpires');
     if (!user) {
       return response
         .status(400)
@@ -510,14 +511,20 @@ export async function updateUserDetails(request, response) {
       },
       { new: true }
     );
-    if (email !== userExist.email) {
-      //Send verification email
-      await sendEmailFun({
-        sendTo: email,
-        subject: "Verify email from Ecommerce App",
-        text: "",
-        html: VerificationEmail(name, verifyCode),
-      });
+    if (typeof email === "string" && email.trim().toLowerCase() !== String(userExist.email || "").toLowerCase()) {
+      const verifyCode = String(Math.floor(100000 + Math.random() * 900000));
+      updateUser.otp = verifyCode;
+      updateUser.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+      await updateUser.save();
+      const emailSent = await sendEmailFun(
+        email.trim(),
+        "Verify your Webzoneo email address",
+        "Your email verification code is " + verifyCode + ". It expires in 10 minutes.",
+        "<p>Your email verification code is <strong>" + verifyCode + "</strong>.</p><p>It expires in 10 minutes.</p>"
+      );
+      if (!emailSent) {
+        return response.status(503).json({ message: "Profile updated, but the verification email could not be sent. Check SMTP settings and retry verification.", error: true, success: false });
+      }
     }
     return response.json({
       message: "User Updated successfully",
@@ -552,23 +559,26 @@ export async function forgotPasswordController(request, response) {
         success: false,
       });
     } else {
-      let verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const verifyCode = String(Math.floor(100000 + Math.random() * 900000));
       user.otp = verifyCode;
-      user.otpExpires = Date.now() + 600000;
+      user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+      user.passwordResetVerifiedAt = null;
       await user.save();
 
-      await sendEmailFun(
+      const emailSent = await sendEmailFun(
         email,
-        "Verify OTP from Ecommerce App",
-        "",
-        VerificationEmail(user.name, verifyCode)
+        "Reset your Webzoneo password",
+        "Your password reset code is " + verifyCode + ". It expires in 10 minutes. If you did not request this, ignore this email.",
+        "<p>Your password reset code is <strong>" + verifyCode + "</strong>.</p><p>It expires in 10 minutes. If you did not request this, ignore this email.</p>"
       );
+      if (!emailSent) {
+        user.otp = null;
+        user.otpExpires = null;
+        await user.save();
+        return response.status(503).json({ message: "Password reset email could not be sent. Please contact the administrator.", error: true, success: false });
+      }
 
-      return response.json({
-        message: "Check your email",
-        error: false,
-        success: true,
-      });
+      return response.json({ message: "Check your email for the reset code.", error: false, success: true });
     }
   } catch (error) {
     return response.status(500).json({
@@ -583,42 +593,27 @@ export async function forgotPasswordController(request, response) {
 export async function verifyForgotPasswordOtp(request, response) {
   try {
     const { email, otp } = request.body;
-    const user = await UserModel.findOne({ email: email });
-
-    if (!user) {
-      return response.status(400).json({
-        message: "Email not available",
-        error: true,
-        success: false,
-      });
+    if (typeof email !== "string" || typeof otp !== "string" || !email.trim() || !/^\d{6}$/.test(otp)) {
+      return response.status(400).json({ message: "Provide a valid email and six-digit OTP.", error: true, success: false });
     }
-    if (!email || !otp) {
-      return response.status(400).json({
-        message: "Provide required field email, otp.",
-        error: true,
-        success: false,
-      });
+    const user = await UserModel.findOne({ email: email.trim().toLowerCase() })
+      .select("+otp +otpExpires +passwordResetVerifiedAt");
+    if (!user || !user.otp || !user.otpExpires) {
+      return response.status(400).json({ message: "Invalid or expired OTP.", error: true, success: false });
     }
-
     if (otp !== user.otp) {
-      return response.status(400).json({
-        message: "Invalid OTP",
-        error: true,
-        success: false,
-      });
+      return response.status(400).json({ message: "Invalid OTP", error: true, success: false });
     }
-    const currentTime = new Date().toISOString();
-
-    if (user.otpExpires < currentTime) {
-      return response.status(400).json({
-        message: "OTP is Expired",
-        error: true,
-        success: false,
-      });
+    if (new Date(user.otpExpires).getTime() <= Date.now()) {
+      user.otp = null;
+      user.otpExpires = null;
+      user.passwordResetVerifiedAt = null;
+      await user.save();
+      return response.status(400).json({ message: "OTP is expired", error: true, success: false });
     }
-
-    user.otp = "";
-    user.otpExpires = "";
+    user.otp = null;
+    user.otpExpires = null;
+    user.passwordResetVerifiedAt = new Date(Date.now() + 15 * 60 * 1000);
     await user.save();
 
     return response.status(200).json({
@@ -648,24 +643,19 @@ export async function resetPassword(request, response) {
       });
     }
 
-    const user = await UserModel.findOne({ email });
-    if (!user) {
-      return response.status(400).json({
-        message: "Email is not available",
-        error: true,
-        success: false,
-      });
+    const user = await UserModel.findById(request.userId).select("+password");
+    if (!user || typeof email !== "string" || user.email?.toLowerCase() !== email.trim().toLowerCase()) {
+      return response.status(403).json({ message: "You can only change the password for your own account.", error: true, success: false });
     }
-    if (user?.signUpWithGoogle === false) {
-      // and remove comment if use oldPassword
-      const checkPassword = await bcryptjs.compare(oldPassword, user.password);
-      if (!checkPassword) {
-        return response.status(400).json({
-          message: "Your old password is wrong",
-          error: true,
-          success: false,
-        });
-      }
+    if (typeof oldPassword !== "string" || !oldPassword) {
+      return response.status(400).json({ message: "Current password is required.", error: true, success: false });
+    }
+    const checkPassword = await bcryptjs.compare(oldPassword, user.password);
+    if (!checkPassword) {
+      return response.status(400).json({ message: "Your old password is wrong", error: true, success: false });
+    }
+    if (typeof newPassword !== "string" || newPassword.length < 10) {
+      return response.status(400).json({ message: "New password must be at least 10 characters.", error: true, success: false });
     }
 
     if (newPassword !== confirmPassword) {
@@ -772,20 +762,18 @@ export async function setNewPasswordController(request, response) {
       });
     }
 
-    const user = await UserModel.findOne({ email });
-    if (!user) {
-      return response.status(400).json({
-        message: "User with this email does not exist",
-        error: true,
-        success: false,
-      });
+    if (typeof email !== "string" || typeof newPassword !== "string" || newPassword.length < 10) {
+      return response.status(400).json({ message: "Provide a valid email and a password of at least 10 characters.", error: true, success: false });
     }
-
+    const user = await UserModel.findOne({ email: email.trim().toLowerCase() }).select("+passwordResetVerifiedAt");
+    if (!user || !user.passwordResetVerifiedAt || new Date(user.passwordResetVerifiedAt).getTime() <= Date.now()) {
+      return response.status(403).json({ message: "Verify a current password-reset OTP before changing the password.", error: true, success: false });
+    }
     const salt = await bcryptjs.genSalt(10);
     const hashPassword = await bcryptjs.hash(newPassword, salt);
-
     user.password = hashPassword;
     user.signUpWithGoogle = false;
+    user.passwordResetVerifiedAt = null;
     await user.save();
 
     return response.json({
@@ -834,7 +822,7 @@ export async function getAllUsers(request, response) {
     const skip = (page - 1) * limit;
 
     const totalUsers = await UserModel.countDocuments();
-    const users = await UserModel.find().skip(skip).limit(limit);
+    const users = await UserModel.find().select('-password -refresh_token -access_token -otp -otpExpires -passwordResetVerifiedAt').skip(skip).limit(limit);
 
     if (!users) {
       return response.status(404).json({
@@ -864,7 +852,7 @@ export async function getAllUsers(request, response) {
 
 export async function getAllUsersNoPagination(request, response) {
   try {
-    const users = await UserModel.find();
+    const users = await UserModel.find().select('-password -refresh_token -access_token -otp -otpExpires -passwordResetVerifiedAt');
 
     if (!users) {
       return response.status(404).json({
@@ -980,13 +968,16 @@ export async function approveAdminRequest(request, response) {
 
     await user.save();
 
-    // Send OTP email after approval
-    await sendEmailFun(
+    // Send a verification code using the configured mail transport.
+    const emailSent = await sendEmailFun(
       user.email,
-      "Verify your email from Ecommerce App",
-      "",
-      VerificationEmail(user.name, verifyCode)
+      "Webzoneo administrator access approved",
+      "Your administrator access was approved. Your verification code is " + verifyCode + ". It expires in 10 minutes.",
+      "<p>Your administrator access was approved.</p><p>Your verification code is <strong>" + verifyCode + "</strong>. It expires in 10 minutes.</p>"
     );
+    if (!emailSent) {
+      return response.status(503).json({ message: "Admin access was updated, but the verification email could not be sent. Check SMTP settings.", error: true, success: false });
+    }
 
     return response.status(200).json({
       message: "Admin request approved successfully and OTP sent",

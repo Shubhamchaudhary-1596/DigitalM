@@ -107,7 +107,7 @@ const LeadPopup = ({ isOpen, onClose }) => {
 
       const result = await response.json();
 
-      if (!response.ok || result.success !== true) {
+      if (!response.ok) {
         throw new Error(
           result.message || 'Unable to send your message.'
         );
@@ -170,7 +170,7 @@ const LeadPopup = ({ isOpen, onClose }) => {
                   Get Free Consultation
                 </h2>
                 <p className="text-sm text-gray-500 mt-1">
-                  DigitalM - Your Growth Partner
+                  Webzoneo - Your Growth Partner
                 </p>
               </div>
 

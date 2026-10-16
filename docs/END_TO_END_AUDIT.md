@@ -79,3 +79,20 @@ The live domain still could not be verified from this environment: browser retri
 - [ ] Run `nginx -t` before reloading Nginx; verify PM2 logs and health endpoints after deployment.
 - [ ] Smoke-test homepage, all services, blog details, contact submission, admin login/logout and mobile layouts.
 - [ ] Keep a rollback build and document the release commit SHA.
+
+## Second-pass audit (16 October 2026)
+
+A second review of the merged repository found security and integration gaps in the legacy API that the original lint/build checks did not exercise.
+
+- Added a database-backed administrator authorization middleware and applied it to legacy user listing, admin approval/access changes, destructive user-management operations, and lead listing/search. Authenticated status alone is not treated as administrator permission.
+- Removed password hashes, access/refresh tokens, and OTP/reset fields from user-list API responses.
+- Added request rate limiting to login and password-reset OTP endpoints.
+- Bound the authenticated password-change endpoint to the current user's own account and required the current password.
+- Changed the OTP reset flow to use a one-time code with expiry and a 15-minute server-side authorization window before changing the password.
+- Fixed the reset-email controller to use the existing mail helper and aligned the mail transport with the documented SMTP environment variables.
+- Fixed the consultation popup's success check: the contact endpoint returns HTTP 201 and a message/id, not a `success: true` property.
+
+### Verification limits
+
+GitHub Actions checks validate installability, dependency advisories, frontend lint/build, and the server's unit tests. These do not prove production MongoDB, SMTP delivery, reverse-proxy routes, browser navigation, or existing account migration behavior. Before deploying, test password reset and email verification against a staging database with SMTP configured, test administrator permissions with both ordinary and admin accounts, and run the website/admin contact flows from a browser. Do not commit real credentials or deploy without a database backup.
+

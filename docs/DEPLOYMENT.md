@@ -65,7 +65,7 @@ cd /var/www/DigitalM/server
 npm ci
 npm test --if-present
 ```
-Because this repair reconciles dependency manifests from two previously conflicting versions, run `npm install` once in each project directory and review/commit the regenerated `package-lock.json` files before production. After the manifests and lockfiles match, use `npm ci` for repeatable releases. Do not run `npm ci` against stale lockfiles or ignore build/lint errors.
+The three project lockfiles have been reconciled with their package manifests in this repair branch. Use `npm ci` for repeatable releases. Whenever a dependency manifest changes in the future, run `npm install` in that project directory and commit the matching lockfile before using `npm ci` in CI or production. Do not ignore build/lint errors.
 
 ## 5. API smoke tests
 

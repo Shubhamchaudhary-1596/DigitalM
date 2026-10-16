@@ -1,38 +1,34 @@
-import http from 'http';
+import 'dotenv/config';
 import nodemailer from 'nodemailer';
 
-//Configure the SMTP transporter
+const sendEmail = async (to, subject, text, html) => {
+  const user = process.env.SMTP_USER || process.env.EMAIL;
+  const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
+  if (!user || !pass) {
+    return { success: false, error: 'SMTP credentials are not configured' };
+  }
 
-const transpoter = nodemailer.createTransport({
-    host: 'smtp.gmail.com', // eg "smtp.gmail.com" for Gmail
-    port: 465, // or 465 for secure
-    secure: true, // true for port 465, false for other ports
-    auth:{
-        user: process.env.EMAIL, // your smtp username
-        pass: process.env.EMAIL_PASS,  // your smtp password
-    },
-    tls: {
-        rejectUnauthorized: false // only for development
-    }
-});
+  const port = Number(process.env.SMTP_PORT || 465);
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port,
+    secure: process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : port === 465,
+    auth: { user, pass },
+  });
 
-// Function to the email 
-async function sendEmail(to, subject, text, html){
-    try{
-        const info = await transpoter.sendMail({
-            from: process.env.EMAIL, // sender address
-            to, // list of receivers
-            subject, // Subject line
-            text, // plain text body 
-            html, // html body
-            
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.CONTACT_FROM_EMAIL || user,
+      to,
+      subject,
+      text,
+      html,
+    });
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('Error sending email:', error.message);
+    return { success: false, error: error.message };
+  }
+};
 
-        });
-        return {success: true, messageId: info.messageId}
-    } catch(error){
-        console.error('Error sending email:', error)
-        return {success : false, error:error.message}
-    }
-}
-
-export  {sendEmail};
+export { sendEmail };

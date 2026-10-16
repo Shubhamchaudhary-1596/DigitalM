@@ -164,7 +164,7 @@ export async function adminRegisterUserController(request, response) {
 export async function verifyEmailController(request, response) {
   try {
     const { email, otp } = request.body;
-    const user = await UserModel.findOne({ email: email });
+    const user = await UserModel.findOne({ email: email }).select('+otp +otpExpires');
     if (!user) {
       return response
         .status(400)

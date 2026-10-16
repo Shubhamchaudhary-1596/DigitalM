@@ -1,6 +1,5 @@
-import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-dotenv.config();
+import 'dotenv/config';
 
 const Blog = mongoose.models.WebzoneoBlog || mongoose.model('WebzoneoBlog', {
   title: { type: String, required: true, trim: true, maxlength: 180 },

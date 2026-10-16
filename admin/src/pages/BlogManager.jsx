@@ -1,82 +1,3 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import {
-  Edit,
-  Trash2,
-  Plus,
-  Eye,
-  Search,
-  Filter,
-  Calendar,
-  User,
-  Loader2
-} from 'lucide-react';
-import { getAllBlogs, deleteBlog } from '../utils/api';
-
-const BlogManager = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [filterCategory, setFilterCategory] = useState('all');
-  const [deletingId, setDeletingId] = useState(null);
-
-  // Fetch blogs from API
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const response = await getAllBlogs();
-        if (response?.success && response?.data) {
-          // Transform API data to match component format
-          const transformedBlogs = response.data.map(blog => ({
-            _id: blog._id,
-            id: blog._id,
-            title: blog.title,
-            excerpt: blog.description ? blog.description.substring(0, 100) + '...' : '',
-            description: blog.description,
-            author: 'Admin',
-            category: 'general',
-            images: blog.images || [],
-            status: 'published',
-            featured: false,
-            views: 0,
-            createdAt: blog.createdAt,
-            updatedAt: blog.updatedAt,
-            slug: blog.slug
-          }));
-          setBlogs(transformedBlogs);
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching blogs:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchBlogs();
-  }, []);
-
-  const handleDelete = async (blogId) => {
-    if (window.confirm('Are you sure you want to delete this blog post?')) {
-      try {
-        setDeletingId(blogId);
-        const response = await deleteBlog(blogId);
-        if (response?.success) {
-          setBlogs(blogs.filter(blog => blog._id !== blogId));
-          alert('Blog deleted successfully!');
-        } else {
-          alert(response?.message || 'Failed to delete blog');
-        }
-      } catch (error) {
-        console.error('Error deleting blog:', error);
-        alert('Failed to delete blog. Please try again.');
-      } finally {
-        setDeletingId(null);
-      }
-    }
-=======
 import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 
@@ -96,7 +17,6 @@ const BlogManager = () => {
     try { const response = await api.get('/api/admin/blogs'); setPosts(response.data); }
     catch (e) { setError(e.response?.data?.error || 'Could not load blog posts. Check API URL, login and database.'); }
     finally { setLoading(false); }
->>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
   };
   useEffect(() => { load(); }, []);
 

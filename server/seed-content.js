@@ -1,7 +1,8 @@
-require('dotenv').config();
-const mongoose = require('mongoose');
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+dotenv.config();
 
-const Blog = mongoose.model('Blog', {
+const Blog = mongoose.models.WebzoneoBlog || mongoose.model('WebzoneoBlog', {
   title: { type: String, required: true, trim: true, maxlength: 180 },
   slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
   excerpt: { type: String, required: true, maxlength: 500 },
@@ -16,7 +17,7 @@ const Blog = mongoose.model('Blog', {
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
-const Service = mongoose.model('Service', {
+const Service = mongoose.models.WebzoneoService || mongoose.model('WebzoneoService', {
   title: { type: String, required: true, trim: true, maxlength: 160 },
   slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
   description: { type: String, required: true, maxlength: 3000 },
@@ -43,7 +44,7 @@ const blogs = [
 ];
 
 async function seed() {
-  await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/webzoneo');
+  await mongoose.connect(process.env.MONGODB_URI || process.env.MONGODB_URL || 'mongodb://127.0.0.1:27017/webzoneo');
   try {
     const serviceCount = await Service.countDocuments();
     const blogCount = await Blog.countDocuments();

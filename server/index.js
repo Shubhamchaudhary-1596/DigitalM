@@ -1,26 +1,42 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const helmet = require('helmet');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const rateLimit = require('express-rate-limit');
-const nodemailer = require('nodemailer');
-const { isValidEmail, isValidSlug } = require('./lib/validation');
-require('dotenv').config();
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import helmet from 'helmet';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import rateLimit from 'express-rate-limit';
+import nodemailer from 'nodemailer';
+import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import dotenv from 'dotenv';
+import validation from './lib/validation.js';
+import userRouter from './routes/user.route.js';
+import leadRouter from './routes/lead.route.js';
+import blogRouter from './routes/blog.route.js';
+import categoryRouter from './routes/category.route.js';
+
+dotenv.config();
+const { isValidEmail, isValidSlug } = validation;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(helmet());
+app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+app.use(cookieParser());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:5174').split(',').map((origin) => origin.trim()).filter(Boolean);
 app.use(cors({ origin(origin, callback) { if (!origin || allowedOrigins.includes(origin)) return callback(null, true); return callback(new Error('Origin is not allowed by CORS')); } }));
 app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/webzoneo').then(() => console.log('MongoDB connected')).catch((error) => { console.error('MongoDB connection failed:', error.message); process.exit(1); });
+mongoose.connect(process.env.MONGODB_URI || process.env.MONGODB_URL || 'mongodb://localhost:27017/webzoneo').then(() => console.log('MongoDB connected')).catch((error) => { console.error('MongoDB connection failed:', error.message); process.exit(1); });
 
 // Models
 const Contact = mongoose.model('Contact', {
@@ -79,7 +95,7 @@ const Client = mongoose.model('Client', {
   createdAt: { type: Date, default: Date.now },
 });
 
-const Blog = mongoose.model('Blog', {
+const Blog = mongoose.models.WebzoneoBlog || mongoose.model('WebzoneoBlog', {
   title: { type: String, required: true, trim: true, maxlength: 180 },
   slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
   excerpt: { type: String, required: true, maxlength: 500 },
@@ -95,7 +111,7 @@ const Blog = mongoose.model('Blog', {
   updatedAt: { type: Date, default: Date.now }
 });
 
-const Service = mongoose.model('Service', {
+const Service = mongoose.models.WebzoneoService || mongoose.model('WebzoneoService', {
   title: { type: String, required: true, trim: true, maxlength: 160 },
   slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
   description: { type: String, required: true, maxlength: 3000 },
@@ -107,9 +123,13 @@ const Service = mongoose.model('Service', {
   updatedAt: { type: Date, default: Date.now }
 });
 
+// Existing application routes remain available alongside the Webzoneo content API.
+app.use('/api/user', userRouter);
+app.use('/api/lead', leadRouter);
+app.use('/api/blog', blogRouter);
+app.use('/api/category', categoryRouter);
+
 // Routes
-
-
 const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false });
 const requireAdmin = (req, res, next) => {
   const header = req.headers.authorization || '';
@@ -486,4 +506,4 @@ app.listen(PORT, () => {
   console.log('MongoDB configured: ' + (process.env.MONGODB_URI ? 'custom URI' : 'local default URI'));
 });
 
-module.exports = app;
+export default app;

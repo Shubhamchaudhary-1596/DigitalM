@@ -1,26 +1,20 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, Phone, Lock, Shield, Zap } from 'lucide-react';
-import axios from 'axios';
-import { postData } from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    mobile: '',
+    email: '',
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-<<<<<<< HEAD
-=======
   const { login } = useAuth();
->>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUser } = useAuth();
 
   const from = location.state?.from?.pathname || '/dashboard';
 
@@ -36,65 +30,18 @@ const Login = () => {
     setLoading(true);
     setError('');
 
-    try {
-      const data = await postData('/api/user/login', {
-        mobile: formData.mobile,
-        password: formData.password,
-        isAdminLogin: true
-      });
+    const result = await login(formData.email, formData.password);
 
-      if (data.success) {
-        // Store tokens in localStorage
-        localStorage.setItem('accessToken', data.data.accesstoken);
-        localStorage.setItem('refreshToken', data.data.refreshToken);
-
-        // Set axios default header
-        axios.defaults.headers.common['Authorization'] = `Bearer ${data.data.accesstoken}`;
-
-        // Set user data from login response if available, otherwise fetch user details
-        if (data.data.user) {
-          setUser(data.data.user);
-        } else {
-          // Fetch user details from API
-          try {
-            const userResponse = await axios.get('/api/user/user-details', {
-              headers: {
-                Authorization: `Bearer ${data.data.accesstoken}`
-              }
-            });
-            if (userResponse.data.success) {
-              setUser(userResponse.data.data);
-            }
-          } catch (userError) {
-            console.error('Error fetching user details:', userError);
-          }
-        }
-
-        // Redirect to dashboard
-        navigate(from, { replace: true });
-      } else {
-        setError(data.message || 'Login failed');
-      }
-    } catch (error) {
-      setError('Network error. Please try again.');
+    if (result.success) {
+      navigate(from, { replace: true });
+    } else {
+      setError(result.error);
     }
 
     setLoading(false);
   };
 
   return (
-<<<<<<< HEAD
-    <div className="login-page">
-      {/* Animated background orbs */}
-      <div className="bg-orbs">
-        <div className="orb orb-1"></div>
-        <div className="orb orb-2"></div>
-        <div className="orb orb-3"></div>
-      </div>
-      
-      {/* Grid pattern overlay */}
-      <div className="grid-overlay"></div>
-=======
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
@@ -108,56 +55,40 @@ const Login = () => {
             Administrator access is provisioned by the site owner.
           </p>
         </div>
->>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
 
-      <div className="login-container">
-        <div className="glass-card">
-          {/* Logo/Header Section */}
-          <div className="login-header">
-            <div className="logo-wrapper">
-              <div className="logo-icon">
-                <Shield className="h-7 w-7" />
-              </div>
-              <Zap className="h-5 w-5 spark-icon" />
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              {error}
             </div>
-            <h2 className="login-title">Admin Portal</h2>
-            <p className="login-subtitle">Welcome back! Please sign in to continue.</p>
-          </div>
+          )}
 
-          {/* Login Form */}
-          <form className="login-form" onSubmit={handleSubmit}>
-            {error && (
-              <div className="error-message">
-                <span>{error}</span>
-              </div>
-            )}
-
-            <div className="form-group">
-              <label htmlFor="mobile" className="form-label">Mobile Number</label>
-              <div className="input-wrapper">
-                <div className="input-icon">
-                  <Phone className="h-5 w-5" />
-                </div>
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email address
+              </label>
+              <div className="mt-1 relative">
                 <input
-                  id="mobile"
-                  name="mobile"
-                  type="tel"
-                  autoComplete="tel"
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
                   required
-                  value={formData.mobile}
+                  value={formData.email}
                   onChange={handleChange}
-                  className="glass-input"
-                  placeholder="Enter your mobile number"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary pl-10"
+                  placeholder="Enter your email"
                 />
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               </div>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="password" className="form-label">Password</label>
-              <div className="input-wrapper">
-                <div className="input-icon">
-                  <Lock className="h-5 w-5" />
-                </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="mt-1 relative">
                 <input
                   id="password"
                   name="password"
@@ -166,55 +97,39 @@ const Login = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="glass-input"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary pl-10 pr-10"
                   placeholder="Enter your password"
                 />
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="password-toggle"
+                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
+          </div>
 
-            <div className="form-footer">
-              <Link to="/forgot-password" className="forgot-link">
+          <div className="flex items-center justify-between">
+            <div className="text-sm">
+              <Link to="/forgot-password" className="font-medium text-primary hover:text-secondary">
                 Forgot your password?
               </Link>
             </div>
+          </div>
 
-            <div className="register-link">
-              <span>Don't have an account? </span>
-              <Link to="/register" className="register-link-a">
-                Sign Up
-              </Link>
-            </div>
-
+          <div>
             <button
               type="submit"
               disabled={loading}
-              className="submit-btn"
+              className="w-full text-white px-4 py-2 rounded-lg font-medium hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? (
-                <span className="loading-spinner"></span>
-              ) : (
-                <>
-                  <span>Sign In</span>
-                  <svg className="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </>
-              )}
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
-          </form>
-
-          {/* Footer */}
-          <div className="login-footer">
-            <p>Secure Admin Access</p>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

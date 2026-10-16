@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Calendar, User, ArrowRight, Search, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { getPublicBlogs, getPublicCategories } from '../utils/api';
 
 const Blog = () => {
   const [ref, inView] = useInView({
@@ -12,94 +13,93 @@ const Blog = () => {
 
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [categories, setCategories] = useState([]);
 
-  const categories = [
-    { id: 'all', name: 'All Posts', count: 12 },
-    { id: 'seo', name: 'SEO', count: 4 },
-    { id: 'ppc', name: 'PPC', count: 3 },
-    { id: 'social', name: 'Social Media', count: 3 },
-    { id: 'strategy', name: 'Strategy', count: 2 }
-  ];
+  // Fetch categories and blogs on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch categories
+        const categoriesResponse = await getPublicCategories();
+        if (categoriesResponse?.success) {
+          // Transform categories for the UI
+          const cats = categoriesResponse.data || [];
+          setCategories(cats);
+        }
+        
+        // Fetch all blogs
+        const blogsResponse = await getPublicBlogs(selectedCategory);
+        if (blogsResponse?.success) {
+          setBlogPosts(blogsResponse.data || []);
+        }
+      } catch (error) {
+        console.error('Error fetching blog data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const blogPosts = [
-    {
-      id: 1,
-      title: 'The Complete Guide to SEO in 2024: Strategies That Actually Work',
-      excerpt: 'Discover the latest SEO strategies and techniques that are driving results in 2024. From AI-powered optimization to Core Web Vitals, learn what really matters.',
-      image: 'https://images.pexels.com/photos/265087/pexels-photo-265087.jpeg?auto=compress&cs=tinysrgb&w=600',
-      author: 'Sarah Chen',
-      date: '2024-01-15',
-      category: 'seo',
-      readTime: '8 min read',
-      slug: 'complete-seo-guide-2024',
-      featured: true
-    },
-    {
-      id: 2,
-      title: 'How to Optimize Your Google Ads for Maximum ROI',
-      excerpt: 'Learn the advanced techniques we use to help our clients achieve 4x+ ROAS with their Google Ads campaigns. Includes real case studies and actionable tips.',
-      image: 'https://images.pexels.com/photos/590020/pexels-photo-590020.jpeg?auto=compress&cs=tinysrgb&w=600',
-      author: 'Michael Rodriguez',
-      date: '2024-01-12',
-      category: 'ppc',
-      readTime: '6 min read',
-      slug: 'optimize-google-ads-roi'
-    },
-    {
-      id: 3,
-      title: 'Social Media Marketing Trends to Watch in 2024',
-      excerpt: 'Stay ahead of the curve with these emerging social media trends. From AI-generated content to micro-influencer partnerships, discover what\'s next.',
-      image: 'https://images.pexels.com/photos/267389/pexels-photo-267389.jpeg?auto=compress&cs=tinysrgb&w=600',
-      author: 'Emily Johnson',
-      date: '2024-01-10',
-      category: 'social',
-      readTime: '7 min read',
-      slug: 'social-media-trends-2024'
-    },
-    {
-      id: 4,
-      title: 'Building a Winning Content Marketing Strategy',
-      excerpt: 'Content is still king, but the game has changed. Learn how to create a content strategy that drives traffic, engagement, and conversions in today\'s landscape.',
-      image: 'https://images.pexels.com/photos/48604/pexels-photo-48604.jpeg?auto=compress&cs=tinysrgb&w=600',
-      author: 'David Thompson',
-      date: '2024-01-08',
-      category: 'strategy',
-      readTime: '10 min read',
-      slug: 'content-marketing-strategy'
-    },
-    {
-      id: 5,
-      title: 'Local SEO: How to Dominate Your Local Market',
-      excerpt: 'Local businesses need local visibility. Discover the exact strategies we use to help our clients rank #1 in local search results.',
-      image: 'https://images.pexels.com/photos/270408/pexels-photo-270408.jpeg?auto=compress&cs=tinysrgb&w=600',
-      author: 'Sarah Chen',
-      date: '2024-01-05',
-      category: 'seo',
-      readTime: '9 min read',
-      slug: 'local-seo-domination'
-    },
-    {
-      id: 6,
-      title: 'The Psychology of High-Converting Landing Pages',
-      excerpt: 'What makes visitors convert? Dive deep into the psychological principles that drive conversions and learn how to apply them to your landing pages.',
-      image: 'https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=600',
-      author: 'Emily Johnson',
-      date: '2024-01-03',
-      category: 'strategy',
-      readTime: '12 min read',
-      slug: 'psychology-landing-pages'
-    }
-  ];
+    fetchData();
+  }, []);
+
+  // Fetch blogs when category changes
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        setLoading(true);
+        const blogsResponse = await getPublicBlogs(selectedCategory);
+        if (blogsResponse?.success) {
+          setBlogPosts(blogsResponse.data || []);
+        }
+      } catch (error) {
+        console.error('Error fetching blogs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogs();
+  }, [selectedCategory]);
+
+  // Build category list with counts
+  const getCategoryList = () => {
+    const categoryList = [
+      { 
+        id: 'all', 
+        name: 'All Posts', 
+        count: blogPosts.length 
+      }
+    ];
+    
+    // Add categories from API
+    categories.forEach(cat => {
+      const catBlogs = blogPosts.filter(post => 
+        post.category?._id === cat._id || post.category === cat._id
+      );
+      categoryList.push({
+        id: cat._id,
+        name: cat.name,
+        count: catBlogs.length
+      });
+    });
+    
+    return categoryList;
+  };
 
   const filteredPosts = blogPosts.filter(post => {
-    const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
+    const matchesSearch = !searchTerm || 
+      post.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
   });
 
-  const featuredPost = blogPosts.find(post => post.featured);
-  const regularPosts = blogPosts.filter(post => !post.featured);
+  // Get the first blog as featured (most recent)
+  const featuredPost = filteredPosts.length > 0 ? filteredPosts[0] : null;
+  const regularPosts = filteredPosts.length > 1 ? filteredPosts.slice(1) : [];
 
   return (
     <div className="pt-20">
@@ -161,7 +161,7 @@ const Blog = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2">
                 <div className="relative">
                   <img
-                    src={featuredPost.image}
+                    src={featuredPost.images?.[0] || 'https://images.pexels.com/photos/265087/pexels-photo-265087.jpeg?auto=compress&cs=tinysrgb&w=800'}
                     alt={featuredPost.title}
                     className="w-full h-64 lg:h-full object-cover"
                   />
@@ -176,17 +176,13 @@ const Blog = () => {
                   <div className="flex items-center space-x-4 text-sm text-gray-600 mb-4">
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 mr-1" />
-                      {new Date(featuredPost.date).toLocaleDateString('en-US', { 
+                      {featuredPost.createdAt ? new Date(featuredPost.createdAt).toLocaleDateString('en-US', { 
                         year: 'numeric', 
                         month: 'long', 
                         day: 'numeric' 
-                      })}
+                      }) : '-'}
                     </div>
-                    <div className="flex items-center">
-                      <User className="h-4 w-4 mr-1" />
-                      {featuredPost.author}
-                    </div>
-                    <span>{featuredPost.readTime}</span>
+                    <span>{featuredPost.readTime || '5 min read'}</span>
                   </div>
                   
                   <h3 className="text-2xl lg:text-3xl font-bold text-[#111827] mb-4">
@@ -194,7 +190,7 @@ const Blog = () => {
                   </h3>
                   
                   <p className="text-gray-600 leading-relaxed mb-6">
-                    {featuredPost.excerpt}
+                    {featuredPost.description?.substring(0, 200) || 'No description available'}...
                   </p>
                   
                   <Link
@@ -221,7 +217,7 @@ const Blog = () => {
                 <Tag className="h-5 w-5 text-gray-400 mr-2" />
                 <span className="text-gray-600 font-medium">Categories:</span>
               </div>
-              {categories.map(category => (
+              {getCategoryList().map(category => (
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
@@ -239,9 +235,9 @@ const Blog = () => {
 
           {/* Posts Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredPosts.map((post, index) => (
+            {regularPosts.map((post, index) => (
               <motion.article
-                key={post.id}
+                key={post._id || index}
                 initial={{ opacity: 0, y: 30 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -249,13 +245,13 @@ const Blog = () => {
               >
                 <div className="relative overflow-hidden">
                   <img
-                    src={post.image}
+                    src={post.images?.[0] || 'https://images.pexels.com/photos/265087/pexels-photo-265087.jpeg?auto=compress&cs=tinysrgb&w=600'}
                     alt={post.title}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute top-4 left-4">
                     <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-medium">
-                      {post.category.toUpperCase()}
+                      {(post.category?.name || 'Blog').toUpperCase()}
                     </span>
                   </div>
                 </div>
@@ -264,16 +260,13 @@ const Blog = () => {
                   <div className="flex items-center space-x-4 text-xs text-gray-500 mb-3">
                     <div className="flex items-center">
                       <Calendar className="h-3 w-3 mr-1" />
-                      {new Date(post.date).toLocaleDateString('en-US', { 
+                      {post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-US', { 
                         month: 'short', 
-                        day: 'numeric' 
-                      })}
+                        day: 'numeric',
+                        year: 'numeric'
+                      }) : '-'}
                     </div>
-                    <div className="flex items-center">
-                      <User className="h-3 w-3 mr-1" />
-                      {post.author}
-                    </div>
-                    <span>{post.readTime}</span>
+                    <span>{post.readTime || '5 min read'}</span>
                   </div>
 
                   <h3 className="text-lg font-bold text-[#111827] mb-3 line-clamp-2">
@@ -281,7 +274,7 @@ const Blog = () => {
                   </h3>
 
                   <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
-                    {post.excerpt}
+                    {post.description?.substring(0, 150) || 'No description available'}...
                   </p>
 
                   <Link
@@ -296,9 +289,14 @@ const Blog = () => {
             ))}
           </div>
 
-          {filteredPosts.length === 0 && (
+          {loading ? (
             <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">No articles found matching your criteria.</p>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#0ea5a4]"></div>
+              <p className="text-gray-500 text-lg mt-4">Loading articles...</p>
+            </div>
+          ) : regularPosts.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">No articles found in this category.</p>
               <button
                 onClick={() => {
                   setSelectedCategory('all');
@@ -306,10 +304,10 @@ const Blog = () => {
                 }}
                 className="mt-4 text-[#0ea5a4] hover:text-[#0b9488] font-semibold"
               >
-                Clear filters
+                View all articles
               </button>
             </div>
-          )}
+          ) : null}
         </div>
       </section>
 

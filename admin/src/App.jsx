@@ -6,11 +6,15 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
 import BlogManager from './pages/BlogManager';
+import AddBlog from './pages/AddBlog';
 import ServiceManager from './pages/ServiceManager';
 import PackageManager from './pages/PackageManager';
 import ProjectManager from './pages/ProjectManager';
 import UserManager from './pages/UserManager';
 import Profile from './pages/Profile';
+import CategoryManager from './pages/CategoryManager';
+import BlogCategoryManager from './pages/BlogCategoryManager';
+import LeadsManager from './pages/LeadsManager';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
@@ -25,8 +29,10 @@ function App() {
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="blogs" element={<BlogManager />} />
-            <Route path="blogs/new" element={<BlogManager />} />
-            <Route path="blogs/edit/:id" element={<BlogManager />} />
+            <Route path="blogs/new" element={<AddBlog />} />
+            <Route path="blogs/edit/:id" element={<AddBlog />} />
+            <Route path="categories" element={<CategoryManager />} />
+            <Route path="blog-categories" element={<BlogCategoryManager />} />
             <Route path="services" element={<ServiceManager />} />
             <Route path="services/new" element={<ServiceManager />} />
             <Route path="services/edit/:id" element={<ServiceManager />} />
@@ -38,6 +44,7 @@ function App() {
             <Route path="projects/edit/:id" element={<ProjectManager />} />
             <Route path="users" element={<UserManager />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="leads" element={<LeadsManager />} />
           </Route>
 
           {/* Public routes for auth pages */}

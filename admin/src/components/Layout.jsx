@@ -12,22 +12,27 @@ import {
   LogOut,
   Menu,
   X,
-  Bell
+  Bell,
+  Layers,
+  UserCheck
 } from 'lucide-react';
 
 const Layout = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, loading: authLoading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Categories', href: '/categories', icon: Layers },
+    { name: 'Blog Categories', href: '/blog-categories', icon: FileText },
     { name: 'Blogs', href: '/blogs', icon: FileText },
     { name: 'Services', href: '/services', icon: Settings },
     { name: 'Packages', href: '/packages', icon: Package },
     { name: 'Projects', href: '/projects', icon: FolderOpen },
     { name: 'Users', href: '/users', icon: Users, adminOnly: true },
+    { name: 'Leads', href: '/leads', icon: UserCheck },
   ];
 
   const handleLogout = () => {
@@ -66,22 +71,30 @@ const Layout = () => {
 
         {/* Navigation */}
         <nav>
-          {navigation.map((item) => {
-            if (item.adminOnly && user?.role !== 'admin') return null;
+          {authLoading ? (
+            <div className="p-4 space-y-2">
+              <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+          ) : (
+            navigation.map((item) => {
+              if (item.adminOnly && user?.role !== 'admin') return null;
 
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={isActive(item.href) ? 'active' : ''}
-                onClick={() => setSidebarOpen(false)}
-              >
-                <Icon style={{ display: 'inline-block', marginRight: '0.5rem', width: '1rem', height: '1rem' }} />
-                {item.name}
-              </Link>
-            );
-          })}
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={isActive(item.href) ? 'active' : ''}
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <Icon style={{ display: 'inline-block', marginRight: '0.5rem', width: '1rem', height: '1rem' }} />
+                  {item.name}
+                </Link>
+              );
+            })
+          )}
         </nav>
 
         {/* User menu */}
@@ -102,12 +115,12 @@ const Layout = () => {
             }}>
               <User style={{ width: '1rem', height: '1rem', color: 'white' }} />
             </div>
-            <div style={{ marginLeft: '0.75rem' }}>
+<div style={{ marginLeft: '0.75rem' }}>
               <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#111827', margin: 0 }}>
-                {user?.name}
+                {user ? (user.name || 'Loading...') : 'Loading...'}
               </p>
               <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: 0 }}>
-                {user?.email}
+                {user ? (user.email || 'No email') : 'Loading...'}
               </p>
             </div>
           </div>
@@ -200,7 +213,7 @@ const Layout = () => {
                   fontWeight: '500',
                   color: '#374151'
                 }}>
-                  {user?.name}
+                  {user ? (user.name || 'Loading...') : 'Loading...'}
                 </span>
               </div>
             </div>

@@ -10,7 +10,7 @@ const Stats = () => {
   });
 
   const stats = [
-    {
+    { 
       icon: Users,
       number: '500+',
       label: 'Happy Clients',

@@ -26,64 +26,61 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-white shadow-lg' : 'bg-transparent'
-    }`} role="navigation" aria-label="Main navigation">
+    <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-lg' : 'bg-transparent'
+      }`} role="navigation" aria-label="Main navigation">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-30">
+        <div className="flex justify-between items-center h-20">
           {/* <Link to="/" className="flex items-center space-x-2" aria-label="DigitalMax Home">
             <div className="w-8 h-8 bg-[#0ea5a4] rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">D</span>
             </div> */}
-            {/* <span className={`font-bold text-xl ${
+          {/* <span className={`font-bold text-xl ${
               isScrolled || location.pathname !== '/' ? 'text-[#111827]' : 'text-white'
             }`}> */}
-             {/* <span className={`font-bold text-xl text-[#111827]
+          {/* <span className={`font-bold text-xl text-[#111827]
             }`}>
               DigitalMax
             </span>
           </Link> */}
 
 
-<Link
-  to="/"
-  className="flex items-center"
-  aria-label="WebZoneo Home"
->
-  <img
-    src="/logo.png"
-    alt="WebZoneo Logo"
-    className="w-50 h-50 object-contain"
-  />
-</Link>
+          <Link
+            to="/"
+            className="flex items-center"
+            aria-label="WebZoneo Home"
+          >
+            <img
+              src="/logo.png"
+              alt="WebZoneo Logo"
+              className="w-40 h-40 object-contain"
+            />
+          </Link>
 
           {/* Desktop Navigation */}
           <ul className="hidden md:flex items-center space-x-8 list-none m-0 p-0">
             <li>
-              <Link 
-                to="/" 
-                
-                className={`font-medium transition-colors ${
-                  isScrolled || location.pathname !== '/' 
-                    ? 'text-[#374151] hover:text-[#0ea5a4]' 
+              <Link
+                to="/"
+
+                className={`font-medium transition-colors ${isScrolled || location.pathname !== '/'
+                    ? 'text-[#374151] hover:text-[#0ea5a4]'
                     : 'text-white hover:text-[#5eead4]'
-                }`}
+                  }`}
               >
                 Home
               </Link>
             </li>
             <li className="relative"
-                onMouseEnter={() => setServicesOpen(true)}
-                onMouseLeave={() => setServicesOpen(false)}
+              onMouseEnter={() => setServicesOpen(true)}
+              onMouseLeave={() => setServicesOpen(false)}
             >
               <button
                 aria-haspopup="true"
                 aria-expanded={servicesOpen}
-                className={`flex items-center font-medium transition-colors ${
-                  isScrolled || location.pathname !== '/' 
-                    ? 'text-[#374151] hover:text-[#0ea5a4]' 
+                className={`flex items-center font-medium transition-colors ${isScrolled || location.pathname !== '/'
+                    ? 'text-[#374151] hover:text-[#0ea5a4]'
                     : 'text-white hover:text-[#5eead4]'
-                }`}
+                  }`}
               >
                 Services <ChevronDown className="ml-1 h-4 w-4" aria-hidden="true" />
               </button>
@@ -115,49 +112,45 @@ const Navbar = () => {
               </AnimatePresence>
             </li>
             <li>
-              <Link 
-                to="/work" 
-                className={`font-medium transition-colors ${
-                  isScrolled || location.pathname !== '/' 
-                    ? 'text-[#374151] hover:text-[#0ea5a4]' 
+              <Link
+                to="/work"
+                className={`font-medium transition-colors ${isScrolled || location.pathname !== '/'
+                    ? 'text-[#374151] hover:text-[#0ea5a4]'
                     : 'text-white hover:text-[#5eead4]'
-                }`}
+                  }`}
               >
                 Work
               </Link>
             </li>
             <li>
-              <Link 
-                to="/about" 
-                className={`font-medium transition-colors ${
-                  isScrolled || location.pathname !== '/' 
-                    ? 'text-[#374151] hover:text-[#0ea5a4]' 
+              <Link
+                to="/about"
+                className={`font-medium transition-colors ${isScrolled || location.pathname !== '/'
+                    ? 'text-[#374151] hover:text-[#0ea5a4]'
                     : 'text-white hover:text-[#5eead4]'
-                }`}
+                  }`}
               >
                 About
               </Link>
             </li>
             <li>
-              <Link 
-                to="/blog" 
-                className={`font-medium transition-colors ${
-                  isScrolled || location.pathname !== '/' 
-                    ? 'text-[#374151] hover:text-[#0ea5a4]' 
+              <Link
+                to="/blog"
+                className={`font-medium transition-colors ${isScrolled || location.pathname !== '/'
+                    ? 'text-[#374151] hover:text-[#0ea5a4]'
                     : 'text-white hover:text-[#5eead4]'
-                }`}
+                  }`}
               >
                 Blog
               </Link>
             </li>
             <li>
-              <Link 
+              <Link
                 to="/contact"
-                className={`flex items-center font-medium transition-colors ${
-                  isScrolled || location.pathname !== '/' 
-                    ? 'text-[#374151] hover:text-[#0ea5a4]' 
+                className={`flex items-center font-medium transition-colors ${isScrolled || location.pathname !== '/'
+                    ? 'text-[#374151] hover:text-[#0ea5a4]'
                     : 'text-white hover:text-[#5eead4]'
-                }`}
+                  }`}
               >
                 Get Started
               </Link>
@@ -167,9 +160,8 @@ const Navbar = () => {
           {/* Mobile menu button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className={`md:hidden ${
-              isScrolled || location.pathname !== '/' ? 'text-[#111827]' : 'text-white'
-            }`}
+            className={`md:hidden ${isScrolled || location.pathname !== '/' ? 'text-[#111827]' : 'text-white'
+              }`}
             aria-label="Toggle menu"
             aria-expanded={isOpen}
           >

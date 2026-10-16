@@ -105,8 +105,157 @@ const ServiceDetail = () => {
         professional: { price: '$5,000', features: ['Multi-platform', 'Advanced reporting', '$25K ad spend'] },
         enterprise: { price: '$8,000', features: ['Full-service', 'Custom dashboards', '$50K+ ad spend'] }
       }
+    },
+
+  'social-media': {
+    title: 'Social Media Marketing',
+    subtitle: 'Engage Your Audience & Build Your Brand',
+    description: 'Leverage the power of social media platforms to connect with your audience, increase brand awareness, and drive engagement through tailored strategies.',
+    image: 'https://images.pexels.com/photos/3184435/pexels-photo-3184435.jpeg?auto=compress&cs=tinysrgb&w=800',
+    features: [
+      'Platform-Specific Strategies',
+      'Content Creation & Scheduling',
+      'Community Management',
+      'Social Media Advertising',
+      'Analytics & Reporting',
+      'Influencer Collaborations',
+      'Audience Growth Campaigns',
+      'Reputation Management'
+    ],
+    process: [
+      {
+        step: '1',
+        title: 'Audit & Strategy',
+        description: 'Analyze your current social media presence and create a tailored strategy.'
+      },
+      {
+        step: '2',
+        title: 'Content Creation',
+        description: 'Develop engaging content that resonates with your audience.'
+      },
+      {
+        step: '3',
+        title: 'Campaign Execution',
+        description: 'Launch and manage campaigns across platforms for maximum impact.'
+      },
+      {
+        step: '4',
+        title: 'Performance Analysis',
+        description: 'Track and optimize campaigns based on performance metrics.'
+      }
+    ],
+    results: [
+      { metric: 'Follower Growth', value: '+300%', icon: Users },
+      { metric: 'Engagement Rate', value: '+150%', icon: TrendingUp },
+      { metric: 'Brand Mentions', value: '+200%', icon: CheckCircle },
+      { metric: 'Lead Generation', value: '+180%', icon: DollarSign }
+    ],
+    pricing: {
+      starter: { price: '$1,500', features: ['1-2 platforms', 'Basic reporting', 'Content scheduling'] },
+      professional: { price: '$3,000', features: ['3-4 platforms', 'Advanced analytics', 'Ad campaigns'] },
+      enterprise: { price: '$5,000', features: ['All platforms', 'Custom reporting', 'Dedicated manager'] }
     }
-    // Add other services;
+  },
+
+  'web-development': {
+    title: 'Web Development',
+    subtitle: 'Build Stunning Websites That Convert',
+    description: 'Create responsive, user-friendly, and high-performing websites tailored to your business needs.',
+    image: 'https://images.pexels.com/photos/1181263/pexels-photo-1181263.jpeg?auto=compress&cs=tinysrgb&w=800',
+    features: [
+      'Custom Website Design',
+      'Responsive Development',
+      'E-commerce Solutions',
+      'Content Management Systems',
+      'SEO-Friendly Code',
+      'Performance Optimization',
+      'Maintenance & Support',
+      'Third-Party Integrations'
+    ],
+    process: [
+      {
+        step: '1',
+        title: 'Requirement Gathering',
+        description: 'Understand your business needs and goals for the website.'
+      },
+      {
+        step: '2',
+        title: 'Design & Prototyping',
+        description: 'Create wireframes and design mockups for your approval.'
+      },
+      {
+        step: '3',
+        title: 'Development',
+        description: 'Build the website using modern technologies and best practices.'
+      },
+      {
+        step: '4',
+        title: 'Testing & Launch',
+        description: 'Test the website thoroughly and deploy it to production.'
+      }
+    ],
+    results: [
+      { metric: 'Page Load Speed', value: '-50% Load Time', icon: TrendingUp },
+      { metric: 'User Engagement', value: '+200%', icon: Users },
+      { metric: 'Conversion Rate', value: '+120%', icon: DollarSign },
+      { metric: 'SEO Performance', value: '+300%', icon: CheckCircle }
+    ],
+    pricing: {
+      starter: { price: '$3,000', features: ['Basic website', 'Responsive design', 'SEO-ready'] },
+      professional: { price: '$6,000', features: ['Custom design', 'CMS integration', 'E-commerce'] },
+      enterprise: { price: '$10,000', features: ['Full-stack development', 'Advanced integrations', 'Ongoing support'] }
+    }
+  },
+
+  'content-marketing': {
+    title: 'Content Marketing',
+    subtitle: 'Drive Engagement with High-Quality Content',
+    description: 'Develop and distribute valuable, relevant, and consistent content to attract and retain your target audience.',
+    image: 'https://images.pexels.com/photos/3184631/pexels-photo-3184631.jpeg?auto=compress&cs=tinysrgb&w=800',
+    features: [
+      'Content Strategy Development',
+      'Blog Writing',
+      'Video Production',
+      'Infographics & Visuals',
+      'Email Campaigns',
+      'Content Distribution',
+      'SEO Content Optimization',
+      'Performance Tracking'
+    ],
+    process: [
+      {
+        step: '1',
+        title: 'Research & Planning',
+        description: 'Identify your audience and create a content strategy.'
+      },
+      {
+        step: '2',
+        title: 'Content Creation',
+        description: 'Produce high-quality content tailored to your audience.'
+      },
+      {
+        step: '3',
+        title: 'Distribution',
+        description: 'Distribute content across the right channels for maximum reach.'
+      },
+      {
+        step: '4',
+        title: 'Analysis & Optimization',
+        description: 'Measure performance and refine the strategy for better results.'
+      }
+    ],
+    results: [
+      { metric: 'Website Traffic', value: '+400%', icon: TrendingUp },
+      { metric: 'Lead Generation', value: '+250%', icon: DollarSign },
+      { metric: 'Audience Engagement', value: '+300%', icon: Users },
+      { metric: 'Brand Authority', value: '+180%', icon: CheckCircle }
+    ],
+    pricing: {
+      starter: { price: '$2,000', features: ['Blog posts', 'Basic SEO', 'Monthly reporting'] },
+      professional: { price: '$4,000', features: ['Content strategy', 'SEO optimization', 'Multi-format content'] },
+      enterprise: { price: '$7,000', features: ['Custom campaigns', 'Advanced analytics', 'Dedicated team'] }
+    }
+  }
   };
 
   const service = serviceData[slug];

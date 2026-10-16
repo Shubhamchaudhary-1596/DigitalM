@@ -1,0 +1,1 @@
+# Admin Login Bypass + Login Button Fix\n\n## TODO Steps:\n- [x] Step 1: Understand files (done)\n- [ ] Step 2: Edit Layout.jsx - add login buttons if !user\n- [ ] Step 3: Test admin dev server\n- [ ] Step 4: Verify accessibility + button\n- [ ] Step 5: Update TODO + complete\n\n**Progress:** Editing Layout.jsx

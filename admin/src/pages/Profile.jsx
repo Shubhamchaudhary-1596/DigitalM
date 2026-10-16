@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { User, Mail, Lock, Save, Eye, EyeOff } from 'lucide-react';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading, fetchUser } = useAuth();
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -20,6 +20,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleChange = (e) => {
     setFormData(prev => ({
@@ -99,6 +100,63 @@ const Profile = () => {
       setLoading(false);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="p-6 min-h-screen flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+            <User className="h-8 w-8 text-white animate-spin" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Loading Profile...</h2>
+          <p className="text-gray-600">Fetching your account details</p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="p-6 min-h-screen flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center max-w-md"
+        >
+          <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <User className="h-12 w-12 text-gray-400" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">No Profile Data</h2>
+          <p className="text-gray-600 mb-6">Unable to load your profile information.</p>
+          <button
+            onClick={async () => {
+              setRefreshing(true);
+              try {
+                await fetchUser();
+              } finally {
+                setRefreshing(false);
+              }
+            }}
+            disabled={refreshing}
+            className="bg-primary text-white px-6 py-2 rounded-lg font-medium hover:bg-secondary transition-colors flex items-center mx-auto"
+          >
+            {refreshing ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                Refreshing...
+              </>
+            ) : (
+              'Refresh Profile'
+            )}
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">

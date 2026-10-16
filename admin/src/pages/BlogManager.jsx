@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   Edit,
   Trash2,
@@ -10,68 +10,43 @@ import {
   Filter,
   Calendar,
   User,
-  Tag
+  Loader2
 } from 'lucide-react';
+import { getAllBlogs, deleteBlog } from '../utils/api';
 
 const BlogManager = () => {
-  const { action, id } = useParams();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
+  const [deletingId, setDeletingId] = useState(null);
 
-  // Mock data - replace with actual API calls
+  // Fetch blogs from API
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        // const response = await fetch('/api/blogs');
-        // const data = await response.json();
-
-        // Mock data for now
-        const mockBlogs = [
-          {
-            id: 1,
-            title: 'The Complete Guide to SEO in 2024',
-            excerpt: 'Discover the latest SEO strategies and techniques...',
-            author: 'Sarah Chen',
-            category: 'seo',
-            tags: ['SEO', '2024', 'Digital Marketing'],
+        const response = await getAllBlogs();
+        if (response?.success && response?.data) {
+          // Transform API data to match component format
+          const transformedBlogs = response.data.map(blog => ({
+            _id: blog._id,
+            id: blog._id,
+            title: blog.title,
+            excerpt: blog.description ? blog.description.substring(0, 100) + '...' : '',
+            description: blog.description,
+            author: 'Admin',
+            category: 'general',
+            images: blog.images || [],
             status: 'published',
-            featured: true,
-            views: 1250,
-            createdAt: '2024-01-15',
-            updatedAt: '2024-01-15'
-          },
-          {
-            id: 2,
-            title: 'How to Optimize Your Google Ads',
-            excerpt: 'Learn the advanced techniques for PPC campaigns...',
-            author: 'Michael Rodriguez',
-            category: 'ppc',
-            tags: ['PPC', 'Google Ads', 'Advertising'],
-            status: 'published',
-            featured: false,
-            views: 890,
-            createdAt: '2024-01-12',
-            updatedAt: '2024-01-14'
-          },
-          {
-            id: 3,
-            title: 'Social Media Trends 2024',
-            excerpt: 'Stay ahead of the curve with emerging trends...',
-            author: 'Emily Johnson',
-            category: 'social',
-            tags: ['Social Media', 'Trends', '2024'],
-            status: 'draft',
             featured: false,
             views: 0,
-            createdAt: '2024-01-10',
-            updatedAt: '2024-01-10'
-          }
-        ];
-
-        setBlogs(mockBlogs);
+            createdAt: blog.createdAt,
+            updatedAt: blog.updatedAt,
+            slug: blog.slug
+          }));
+          setBlogs(transformedBlogs);
+        }
         setLoading(false);
       } catch (error) {
         console.error('Error fetching blogs:', error);
@@ -85,10 +60,19 @@ const BlogManager = () => {
   const handleDelete = async (blogId) => {
     if (window.confirm('Are you sure you want to delete this blog post?')) {
       try {
-        // await fetch(`/api/blogs/${blogId}`, { method: 'DELETE' });
-        setBlogs(blogs.filter(blog => blog.id !== blogId));
+        setDeletingId(blogId);
+        const response = await deleteBlog(blogId);
+        if (response?.success) {
+          setBlogs(blogs.filter(blog => blog._id !== blogId));
+          alert('Blog deleted successfully!');
+        } else {
+          alert(response?.message || 'Failed to delete blog');
+        }
       } catch (error) {
         console.error('Error deleting blog:', error);
+        alert('Failed to delete blog. Please try again.');
+      } finally {
+        setDeletingId(null);
       }
     }
   };

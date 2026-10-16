@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
+import { createLead } from '../utils/api.js';
 
 const Contact = () => {
   const [ref, inView] = useInView({
@@ -21,27 +22,53 @@ const Contact = () => {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e ) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission
-    console.log('Form submitted:', formData);
-    setIsSubmitted(true);
     
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        service: '',
-        budget: '',
-        message: '',
-        timeline: ''
-      });
-    }, 3000);
+    if (!formData.name || !formData.email || !formData.service || !formData.message) {
+      setError('Please fill all required fields');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    // Map form data to lead schema
+    const leadData = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone || '',
+      interest: formData.service,
+      description: formData.message
+      // Optionally add: company: formData.company, budget: formData.budget, timeline: formData.timeline
+    };
+
+    const result = await createLead(leadData);
+    
+    setIsLoading(false);
+
+    if (result.success) {
+      setIsSubmitted(true);
+      // Reset form after 3 seconds
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          company: '',
+          service: '',
+          budget: '',
+          message: '',
+          timeline: ''
+        });
+      }, 3000);
+    } else {
+      setError(result.error || 'Failed to send message. Please try again.');
+    }
   };
 
   const handleChange = (e) => {
@@ -55,20 +82,20 @@ const Contact = () => {
     {
       icon: Mail,
       title: 'Email Us',
-      details: 'hello@digitalmax.com',
+      details: 'info@webzoneo.com',
       description: 'Send us an email anytime'
     },
     {
       icon: Phone,
       title: 'Call Us',
-      details: '+1 (555) 123-4567',
+      details: '+91-7983963007',
       description: 'Mon-Fri from 9am to 6pm EST'
     },
     {
       icon: MapPin,
       title: 'Visit Us',
-      details: '123 Business Ave, Suite 100',
-      description: 'New York, NY 10001'
+      details: 'A-35 Sector 69 Noida 201301',
+      description: 'Uttar Pradesh, India'
     },
     {
       icon: Clock,
@@ -326,11 +353,31 @@ const Contact = () => {
                   <div className="text-center">
                     <button
                       type="submit"
-                      className="bg-[#0ea5a4] text-white px-12 py-4 rounded-lg font-semibold hover:bg-[#0b9488] transition-all duration-300 flex items-center justify-center mx-auto group transform hover:scale-105"
+                      disabled={isLoading}
+                      className={`px-12 py-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center mx-auto group transform hover:scale-105 ${
+                        isLoading 
+                          ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                          : 'bg-[#0ea5a4] text-white hover:bg-[#0b9488]'
+                      }`}
                     >
-                      <Send className="mr-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                      Send My Request
+                      {isLoading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="mr-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                          Send My Request
+                        </>
+                      )}
                     </button>
+                    
+                    {error && (
+                      <p className="text-red-500 text-sm mt-4 bg-red-50 p-3 rounded-lg">
+                        {error}
+                      </p>
+                    )}
                     
                     <p className="text-gray-500 text-sm mt-4">
                       We'll get back to you within 24 hours with a customized proposal.

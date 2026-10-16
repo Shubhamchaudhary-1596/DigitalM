@@ -1,5 +1,6 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -11,7 +12,10 @@ import About from './pages/About';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
 import Contact from './pages/Contact';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import ScrollToTop from './components/ScrollToTop';
+import LeadPopup from './components/LeadPopup';
 
 // Admin imports
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -20,9 +24,29 @@ import ServicesManager from './pages/admin/ServicesManager';
 import BlogEditor from './pages/admin/BlogEditor';
 import ServiceEditor from './pages/admin/ServiceEditor';
 
-function App() {
+function AppContent() {
+  const location = useLocation();
+  const [showPopup, setShowPopup] = useState(false);
+
+  // Skip popup on admin/auth pages
+  const isPublicPage = !location.pathname.startsWith('/admin') && !['/login', '/register'].includes(location.pathname);
+
+  useEffect(() => {
+    if (!isPublicPage) return;
+
+    const popupShown = localStorage.getItem('popupShown');
+    if (popupShown) return;
+
+    const timer = setTimeout(() => {
+      setShowPopup(true);
+      localStorage.setItem('popupShown', 'true');
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [isPublicPage]);
+
   return (
-    <Router>
+    <>
       <div className="min-h-screen bg-white">
         <ScrollToTop />
         <Navbar />
@@ -37,6 +61,8 @@ function App() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />} />
@@ -50,6 +76,15 @@ function App() {
         </main>
         <Footer />
       </div>
+      {showPopup && <LeadPopup isOpen={showPopup} onClose={() => setShowPopup(false)} />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

@@ -59,10 +59,10 @@ const Hero = () => {
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </button>
               
-              <button className="border-2 border-white/20 text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/10 transition-all duration-300 flex items-center justify-center group backdrop-blur-sm">
+              {/* <button className="border-2 border-white/20 text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/10 transition-all duration-300 flex items-center justify-center group backdrop-blur-sm">
                 <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
                 Watch Our Story
-              </button>
+              </button> */}
             </motion.div>
 
             <motion.div
@@ -72,7 +72,7 @@ const Hero = () => {
               className="flex items-center space-x-8 mt-12 pt-8 border-t border-white/10"
             >
               <div className="text-center">
-                <div className="text-2xl font-bold text-[#0ea5a4]">500+</div>
+                <div className="text-2xl font-bold text-[#0ea5a4]">15+</div>
                 <div className="text-sm text-gray-400">Happy Clients</div>
               </div>
               <div className="text-center">
@@ -80,7 +80,7 @@ const Hero = () => {
                 <div className="text-sm text-gray-400">Client Retention</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-[#0ea5a4]">$50M+</div>
+                <div className="text-2xl font-bold text-[#0ea5a4]">50k+</div>
                 <div className="text-sm text-gray-400">Revenue Generated</div>
               </div>
             </motion.div>
@@ -123,7 +123,7 @@ const Hero = () => {
         </div>
 
         {/* Client Logos */}
-        <ClientLogos />
+        {/* <ClientLogos /> */}
       </div>
     </div>
   );

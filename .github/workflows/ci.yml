@@ -58,3 +58,33 @@ jobs:
         run: npm run build
       - if: matrix.project == 'server'
         run: npm test
+
+  sync-lockfiles:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/audit/')
+    needs: frontend-and-api
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: lockfile-*
+          path: lockfiles
+          merge-multiple: false
+      - name: Update committed lockfiles
+        run: |
+          cp lockfiles/lockfile-my-project/package-lock.json my-project/package-lock.json
+          cp lockfiles/lockfile-admin/package-lock.json admin/package-lock.json
+          cp lockfiles/lockfile-server/package-lock.json server/package-lock.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add my-project/package-lock.json admin/package-lock.json server/package-lock.json
+          if git diff --cached --quiet; then
+            echo "Lockfiles already match the package manifests."
+            exit 0
+          fi
+          git commit -m "Sync npm lockfiles after dependency reconciliation"
+          git push origin "HEAD:${{ github.ref_name }}"

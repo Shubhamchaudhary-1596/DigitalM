@@ -39,6 +39,13 @@ jobs:
         with:
           node-version: 20
       - run: npm install
+      - name: Export reconciled package lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: lockfile-${{ matrix.project }}
+          path: ${{ matrix.project }}/package-lock.json
+          if-no-files-found: error
+          retention-days: 1
       - name: Report dependency advisories
         run: |
           npm audit --json > /tmp/npm-audit.json || true

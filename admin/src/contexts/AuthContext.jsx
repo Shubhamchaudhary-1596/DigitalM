@@ -1,18 +1,21 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+<<<<<<< HEAD
 import axios from 'axios';
 import { fetchDataFromApi } from '../utils/api';
+=======
+import { api } from '../lib/api';
+>>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
 
 const AuthContext = createContext();
-
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
 
 export const AuthProvider = ({ children }) => {
+<<<<<<< HEAD
 const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(() => localStorage.getItem('accessToken'));
@@ -124,14 +127,20 @@ const [user, setUser] = useState(null);
   }, [token]);
 
   // Set up axios defaults when token changes
+=======
+  const [token, setToken] = useState(() => localStorage.getItem('token') || '');
+  const [user, setUser] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('admin-user') || 'null'); } catch { return null; }
+  });
+  const loading = false;
+
+>>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
   useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    } else {
-      delete axios.defaults.headers.common['Authorization'];
-    }
+    if (token) api.defaults.headers.common.Authorization = 'Bearer ' + token;
+    else delete api.defaults.headers.common.Authorization;
   }, [token]);
 
+<<<<<<< HEAD
   const login = async (mobile, password) => {
     try {
       const response = await axios.post('/api/user/login', { mobile, password });
@@ -140,21 +149,32 @@ const [user, setUser] = useState(null);
       // Store both tokens
       localStorage.setItem('accessToken', newToken);
       localStorage.setItem('refreshToken', newRefreshToken);
+=======
+  const login = async (email, password) => {
+    try {
+      const response = await api.post('/api/auth/login', { email, password });
+      const { token: newToken, user: userData } = response.data;
+      if (!newToken || !userData || userData.role !== 'admin') return { success: false, error: 'The server returned an invalid administrator session.' };
+      api.defaults.headers.common.Authorization = 'Bearer ' + newToken;
+>>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
       setToken(newToken);
       setRefreshToken(newRefreshToken);
       setUser(userData);
+<<<<<<< HEAD
       
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
 
+=======
+      localStorage.setItem('token', newToken);
+      localStorage.setItem('admin-user', JSON.stringify(userData));
+>>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
       return { success: true };
     } catch (error) {
-      return {
-        success: false,
-        error: error.response?.data?.error || 'Login failed'
-      };
+      return { success: false, error: error.response?.data?.error || 'Login failed. Check API configuration and try again.' };
     }
   };
 
+<<<<<<< HEAD
   const register = async (userData) => {
     try {
       const response = await axios.post('/api/user/register', userData);
@@ -179,23 +199,36 @@ const [user, setUser] = useState(null);
     delete axios.defaults.headers.common['Authorization'];
     // Dispatch event for api.js to handle gracefully
     window.dispatchEvent(new CustomEvent('auth:logout'));
+=======
+  const register = async () => ({ success: false, error: 'Public registration is disabled. Ask the site administrator to provision access.' });
+
+  const logout = () => {
+    setUser(null);
+    setToken('');
+    localStorage.removeItem('token');
+    localStorage.removeItem('admin-user');
+    delete api.defaults.headers.common.Authorization;
+>>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
   };
 
   const forgotPassword = async (email) => {
     try {
+<<<<<<< HEAD
       const response = await axios.post('/api/user/forgot-password', { email });
       return {
         success: true,
         message: response.data.message
       };
+=======
+      const response = await api.post('/api/auth/forgot-password', { email });
+      return { success: true, message: response.data.message };
+>>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
     } catch (error) {
-      return {
-        success: false,
-        error: error.response?.data?.error || 'Failed to send reset email'
-      };
+      return { success: false, error: error.response?.data?.error || 'Password reset is not configured. Contact the site administrator.' };
     }
   };
 
+<<<<<<< HEAD
   const value = {
     user,
     token,
@@ -216,4 +249,8 @@ const [user, setUser] = useState(null);
       {children}
     </AuthContext.Provider>
   );
+=======
+  const value = { user, token, loading, login, register, logout, forgotPassword, isAuthenticated: Boolean(token && user), isAdmin: user?.role === 'admin' };
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+>>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
 };

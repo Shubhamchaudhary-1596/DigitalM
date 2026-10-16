@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
@@ -22,6 +23,7 @@ const Contact = () => {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+<<<<<<< HEAD
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -68,6 +70,38 @@ const Contact = () => {
       }, 3000);
     } else {
       setError(result.error || 'Failed to send message. Please try again.');
+=======
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+      const response = await fetch(`${apiBase}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) throw new Error('The contact API is not reachable. Please try again later.');
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(result.error || 'We could not send your enquiry. Please try again.');
+      }
+      setIsSubmitted(true);
+      setFormData({
+        name: '', email: '', phone: '', company: '', service: '',
+        budget: '', message: '', timeline: ''
+      });
+    } catch (error) {
+      setSubmitError(error.message || 'Unable to submit your enquiry. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+>>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
     }
   };
 
@@ -82,26 +116,41 @@ const Contact = () => {
     {
       icon: Mail,
       title: 'Email Us',
+<<<<<<< HEAD
       details: 'info@webzoneo.com',
       description: 'Send us an email anytime'
+=======
+      details: import.meta.env.VITE_PUBLIC_CONTACT_EMAIL || '',
+      description: import.meta.env.VITE_PUBLIC_CONTACT_EMAIL ? 'Send us an email' : ''
+>>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
     },
     {
       icon: Phone,
       title: 'Call Us',
+<<<<<<< HEAD
       details: '+91-7983963007',
       description: 'Mon-Fri from 9am to 6pm EST'
+=======
+      details: import.meta.env.VITE_PUBLIC_CONTACT_PHONE || '',
+      description: import.meta.env.VITE_PUBLIC_BUSINESS_HOURS || ''
+>>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
     },
     {
       icon: MapPin,
       title: 'Visit Us',
+<<<<<<< HEAD
       details: 'A-35 Sector 69 Noida 201301',
       description: 'Uttar Pradesh, India'
+=======
+      details: import.meta.env.VITE_PUBLIC_CONTACT_ADDRESS || '',
+      description: import.meta.env.VITE_PUBLIC_CONTACT_ADDRESS ? 'Business address' : ''
+>>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
     },
     {
       icon: Clock,
       title: 'Business Hours',
-      details: 'Monday - Friday',
-      description: '9:00 AM - 6:00 PM EST'
+      details: import.meta.env.VITE_PUBLIC_BUSINESS_DAYS || '',
+      description: import.meta.env.VITE_PUBLIC_BUSINESS_HOURS || ''
     }
   ];
 
@@ -117,12 +166,15 @@ const Contact = () => {
   ];
 
   const budgetRanges = [
-    'Under $5,000/month',
-    '$5,000 - $10,000/month',
-    '$10,000 - $25,000/month',
-    '$25,000 - $50,000/month',
-    '$50,000+/month',
-    'One-time project'
+    'INR: Under ₹50,000/month',
+    'INR: ₹50,000–₹2 lakh/month',
+    'INR: ₹2–5 lakh/month',
+    'INR: ₹5 lakh+/month',
+    'USD: Under $1,000/month',
+    'USD: $1,000–$5,000/month',
+    'USD: $5,000+/month',
+    'One-time project',
+    'Prefer to discuss'
   ];
 
   const timelines = [
@@ -187,8 +239,8 @@ const Contact = () => {
                     <Icon className="h-8 w-8" />
                   </div>
                   <h3 className="text-lg font-semibold text-[#111827] mb-2">{info.title}</h3>
-                  <p className="text-[#0b9488] font-medium mb-1">{info.details}</p>
-                  <p className="text-gray-600 text-sm">{info.description}</p>
+                  {(info.details || info.description) && <><p className="text-[#0b9488] font-medium mb-1">{info.details}</p>
+                  <p className="text-gray-600 text-sm">{info.description}</p></>}
                 </motion.div>
               );
             })}
@@ -216,6 +268,7 @@ const Contact = () => {
                   </p>
                 </div>
 
+                {submitError && <p role="alert" className="mb-4 rounded-lg bg-red-50 p-4 text-red-700">{submitError}</p>}
                 <form onSubmit={handleSubmit} className="space-y-8">
                   {/* Personal Information */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -230,7 +283,7 @@ const Contact = () => {
                         value={formData.name}
                         onChange={handleChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0ea5a4] focus:border-transparent transition-colors"
-                        placeholder="John Smith"
+                        placeholder="Your full name"
                       />
                     </div>
                     
@@ -261,7 +314,7 @@ const Contact = () => {
                         value={formData.phone}
                         onChange={handleChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0ea5a4] focus:border-transparent transition-colors"
-                        placeholder="+1 (555) 123-4567"
+                        placeholder="Include country code if outside India"
                       />
                     </div>
                     
@@ -353,6 +406,7 @@ const Contact = () => {
                   <div className="text-center">
                     <button
                       type="submit"
+<<<<<<< HEAD
                       disabled={isLoading}
                       className={`px-12 py-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center mx-auto group transform hover:scale-105 ${
                         isLoading 
@@ -371,6 +425,13 @@ const Contact = () => {
                           Send My Request
                         </>
                       )}
+=======
+                      disabled={isSubmitting}
+                      className="bg-[#0ea5a4] disabled:opacity-60 disabled:cursor-not-allowed text-white px-12 py-4 rounded-lg font-semibold hover:bg-[#0b9488] transition-all duration-300 flex items-center justify-center mx-auto group transform hover:scale-105"
+                    >
+                      <Send className="mr-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                      {isSubmitting ? "Sending..." : "Send My Request"}
+>>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
                     </button>
                     
                     {error && (
@@ -380,7 +441,7 @@ const Contact = () => {
                     )}
                     
                     <p className="text-gray-500 text-sm mt-4">
-                      We'll get back to you within 24 hours with a customized proposal.
+                      We'll review your enquiry and follow up using the contact details provided.
                     </p>
                   </div>
                 </form>
@@ -399,8 +460,7 @@ const Contact = () => {
                   Thank You!
                 </h3>
                 <p className="text-gray-600 text-lg">
-                  Your message has been sent successfully. We'll get back to you within 24 hours 
-                  with a customized proposal for your project.
+                  Your enquiry has been received. We will review it and follow up using the contact details you provided.
                 </p>
               </motion.div>
             )}
@@ -408,22 +468,7 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Map Section */}
-      {/* <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-[#111827] mb-12">Our Location</h2>
-          <div className="bg-gray-200 rounded-2xl h-96 flex items-center justify-center">
-            <div className="text-center">
-              <MapPin className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">
-                Interactive map would be embedded here<br />
-                123 Business Ave, Suite 100<br />
-                New York, NY 10001
-              </p>
-            </div>
-          </div>
-        </div>
-      </section> */}
+
     </div>
   );
 };

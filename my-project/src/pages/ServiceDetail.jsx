@@ -1,11 +1,24 @@
-import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useEffect, useState, useMemo } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle, TrendingUp, Users, DollarSign } from 'lucide-react';
+import { useParams, Link } from 'react-router-dom';
+import { ArrowLeft, CheckCircle } from 'lucide-react';
+
+const serviceData = {
+  seo: { title: 'SEO Services', subtitle: 'Build sustainable organic visibility', description: 'Improve technical health, page relevance and useful content so customers can find your business through search.', features: ['Technical SEO audit', 'Keyword and search-intent research', 'On-page optimization', 'Content planning', 'Local SEO where relevant', 'Search performance reporting'] },
+  ppc: { title: 'Paid Advertising (PPC)', subtitle: 'Make campaign spend measurable', description: 'Plan and optimize paid search and social campaigns around clear business goals, conversion tracking and transparent reporting.', features: ['Campaign strategy and setup', 'Keyword and audience research', 'Ad copy and creative testing', 'Landing page review', 'Conversion tracking', 'Budget and performance reporting'] },
+  'social-media': { title: 'Social Media Marketing', subtitle: 'Build a useful, consistent social presence', description: 'Create a channel plan, publish relevant content and measure engagement and business outcomes across the social platforms that matter to your audience.', features: ['Channel and audience strategy', 'Content calendar', 'Creative direction', 'Community response guidelines', 'Paid social coordination', 'Monthly reporting'] },
+  'web-development': { title: 'Web Development', subtitle: 'Build fast, accessible digital experiences', description: 'Design and develop responsive websites and landing pages with clear user journeys, maintainable code and search-friendly foundations.', features: ['Responsive page development', 'Landing pages', 'Accessibility review', 'Performance optimization', 'Analytics integration', 'Technical handover'] },
+  'content-marketing': { title: 'Content Marketing', subtitle: 'Answer customer questions with useful content', description: 'Plan and produce content that supports customer research, search visibility and conversion journeys instead of publishing for volume alone.', features: ['Content and topic research', 'Editorial calendar', 'Blog and landing-page copy', 'Content refreshes', 'Internal-link planning', 'Performance measurement'] },
+  analytics: { title: 'Analytics & Reporting', subtitle: 'Turn measurement into practical decisions', description: 'Set up clear measurement plans and reporting so marketing activity can be evaluated against meaningful business outcomes.', features: ['Analytics configuration review', 'Conversion event planning', 'Campaign tagging guidance', 'Dashboard requirements', 'Data quality checks', 'Monthly insights and next steps'] }
+};
 
 const ServiceDetail = () => {
   const { slug } = useParams();
+  const [apiService, setApiService] = useState(null);
+  const service = useMemo(() => apiService ? { ...(serviceData[slug] || {}), title: apiService.title, description: apiService.description, features: Array.isArray(apiService.features) && apiService.features.length ? apiService.features : (serviceData[slug]?.features || []) } : serviceData[slug], [apiService, slug]);
 
+<<<<<<< HEAD
   // Service data (in a real app, this would come from an API)
   const serviceData = {
     'seo': {
@@ -257,223 +270,57 @@ const ServiceDetail = () => {
     }
   }
   };
+=======
+  useEffect(() => {
+    let cancelled = false;
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+    fetch(apiBase + '/api/services/' + encodeURIComponent(slug)).then((response) => response.ok ? response.json() : Promise.reject(new Error('Service not found in API'))).then((item) => { if (!cancelled) setApiService(item); }).catch(() => { if (!cancelled) setApiService(null); });
+    return () => { cancelled = true; };
+  }, [slug]);
 
-  const service = serviceData[slug];
+  useEffect(() => {
+    document.title = service ? service.title + ' | Webzoneo' : 'Service Not Found | Webzoneo';
+    if (!service) return;
+    let description = document.querySelector('meta[name="description"]');
+    if (!description) {
+      description = document.createElement('meta');
+      description.setAttribute('name', 'description');
+      document.head.appendChild(description);
+    }
+    description.setAttribute('content', service.description);
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', window.location.origin + '/services/' + slug);
+  }, [service, slug]);
+>>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
 
-  if (!service) {
-    return (
-      <div className="pt-20 min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-[#111827] mb-4">Service Not Found</h1>
-          <Link to="/services" className="text-[#0ea5a4] hover:text-[#0b9488]">
-            ← Back to Services
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  if (!service) return <div className="pt-20 min-h-screen flex items-center justify-center"><div className="text-center px-6"><h1 className="text-2xl font-bold text-[#111827] mb-4">Service Not Found</h1><Link to="/services" className="text-[#0ea5a4] hover:text-[#0b9488]">Back to Services</Link></div></div>;
 
   return (
     <div className="pt-20">
-      {/* Breadcrumb */}
-      <div className="bg-gray-50 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center space-x-2 text-sm">
-            <Link to="/" className="text-gray-600 hover:text-[#0ea5a4]">Home</Link>
-            <span className="text-gray-400">→</span>
-            <Link to="/services" className="text-gray-600 hover:text-[#0ea5a4]">Services</Link>
-            <span className="text-gray-400">→</span>
-            <span className="text-[#0ea5a4]">{service.title}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Hero Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <Link
-                to="/services"
-                className="inline-flex items-center text-[#0ea5a4] hover:text-[#0b9488] mb-6"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Services
-              </Link>
-              
-              <h1 className="text-4xl md:text-5xl font-bold text-[#111827] mb-4">
-                {service.title}
-              </h1>
-              <h2 className="text-xl text-[#0ea5a4] font-semibold mb-6">
-                {service.subtitle}
-              </h2>
-              <p className="text-lg text-gray-600 leading-relaxed mb-8">
-                {service.description}
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button className="bg-[#0ea5a4] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#0b9488] transition-colors">
-                  Get Started Today
-                </button>
-                <button className="border border-gray-300 text-[#111827] px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
-                  Schedule Consultation
-                </button>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <img
-                src={service.image}
-                alt={service.title}
-                className="rounded-2xl shadow-2xl"
-              />
-            </motion.div>
-          </div>
+      <section className="py-20 bg-gradient-to-br from-[#111827] to-[#1f2937] text-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Link to="/services" className="inline-flex items-center gap-2 text-gray-300 hover:text-white mb-8"><ArrowLeft size={18} /> All services</Link>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <p className="uppercase tracking-widest text-sm text-[#5eead4] mb-4">Webzoneo Services</p>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">{service.title}</h1>
+            <h2 className="text-xl md:text-2xl text-gray-200 mb-6">{service.subtitle}</h2>
+            <p className="text-lg text-gray-300 max-w-3xl leading-relaxed">{service.description}</p>
+            <Link to="/contact" className="inline-flex mt-8 bg-[#0ea5a4] hover:bg-[#0b9488] text-white font-semibold rounded-lg px-6 py-3">Discuss your project</Link>
+          </motion.div>
         </div>
       </section>
-
-      {/* Results Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-[#111827] mb-12">
-            Results You Can Expect
-          </h2>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {service.results.map((result, index) => {
-              const Icon = result.icon;
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-white rounded-xl p-6 text-center shadow-lg"
-                >
-                  <Icon className="h-8 w-8 text-[#0ea5a4] mx-auto mb-4" />
-                  <div className="text-2xl font-bold text-[#0ea5a4] mb-2">{result.value}</div>
-                  <div className="text-sm text-gray-600">{result.metric}</div>
-                </motion.div>
-              );
-            })}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-[#111827] mb-8">What this service can include</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {service.features.map((feature) => <div key={feature} className="bg-white rounded-xl p-5 shadow-sm flex gap-3 items-start"><CheckCircle className="text-[#0ea5a4] shrink-0 mt-1" size={21} /><p className="text-gray-700">{feature}</p></div>)}
           </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div>
-              <h2 className="text-3xl font-bold text-[#111827] mb-6">What's Included</h2>
-              <div className="space-y-4">
-                {service.features.map((feature, index) => (
-                  <div key={index} className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-[#0ea5a4] mr-3" />
-                    <span className="text-gray-700">{feature}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-3xl font-bold text-[#111827] mb-6">Our Process</h2>
-              <div className="space-y-6">
-                {service.process.map((step, index) => (
-                  <div key={index} className="flex items-start">
-                    <div className="w-8 h-8 bg-[#0ea5a4] text-white rounded-full flex items-center justify-center font-bold text-sm mr-4">
-                      {step.step}
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-[#111827] mb-2">{step.title}</h3>
-                      <p className="text-gray-600">{step.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-[#111827] mb-12">
-            Choose Your Plan
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {Object.entries(service.pricing).map(([plan, details], index) => (
-              <div
-                key={plan}
-                className={`bg-white rounded-2xl p-8 shadow-lg ${
-                  plan === 'professional' ? 'ring-2 ring-[#0ea5a4] scale-105' : ''
-                }`}
-              >
-                {plan === 'professional' && (
-                  <div className="bg-[#0ea5a4] text-white text-sm font-semibold px-4 py-1 rounded-full text-center mb-4">
-                    Most Popular
-                  </div>
-                )}
-                
-                <h3 className="text-xl font-bold text-[#111827] mb-2 capitalize">{plan}</h3>
-                <div className="text-3xl font-bold text-[#0ea5a4] mb-6">
-                  {details.price}<span className="text-lg text-gray-600">/mo</span>
-                </div>
-                
-                <ul className="space-y-3 mb-8">
-                  {details.features.map((feature, i) => (
-                    <li key={i} className="flex items-center text-gray-600">
-                      <CheckCircle className="h-4 w-4 text-[#0ea5a4] mr-2" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                
-                <button
-                  className={`w-full py-3 rounded-lg font-semibold transition-colors ${
-                    plan === 'professional'
-                      ? 'bg-[#0ea5a4] text-white hover:bg-[#0b9488]'
-                      : 'border border-gray-300 text-[#111827] hover:bg-gray-50'
-                  }`}
-                >
-                  Get Started
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-[#0ea5a4] text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to Get Started?
-          </h2>
-          <p className="text-xl text-[#ccfbf1] mb-8">
-            Let's discuss your specific needs and create a customized {service.title.toLowerCase()} strategy for your business.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/contact"
-              className="bg-white text-[#0ea5a4] px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-            >
-              Schedule Free Consultation
-            </Link>
-            <button className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/10 transition-colors">
-              Call (555) 123-4567
-            </button>
-          </div>
+          <p className="mt-8 text-sm text-gray-500">Scope, timelines and pricing are confirmed after reviewing your goals and requirements. Results depend on market conditions, starting position and implementation.</p>
         </div>
       </section>
     </div>

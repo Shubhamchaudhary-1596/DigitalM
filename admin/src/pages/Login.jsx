@@ -14,6 +14,10 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+<<<<<<< HEAD
+=======
+  const { login } = useAuth();
+>>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
   const navigate = useNavigate();
   const location = useLocation();
   const { setUser } = useAuth();
@@ -79,6 +83,7 @@ const Login = () => {
   };
 
   return (
+<<<<<<< HEAD
     <div className="login-page">
       {/* Animated background orbs */}
       <div className="bg-orbs">
@@ -89,6 +94,21 @@ const Login = () => {
       
       {/* Grid pattern overlay */}
       <div className="grid-overlay"></div>
+=======
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <div className="mx-auto h-12 w-12 bg-primary rounded-full flex items-center justify-center">
+            <Lock className="h-6 w-6 text-white" />
+          </div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Sign in to your account
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Administrator access is provisioned by the site owner.
+          </p>
+        </div>
+>>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
 
       <div className="login-container">
         <div className="glass-card">

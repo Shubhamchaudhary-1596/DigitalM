@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Search, Target, Users, Code, PenTool, BarChart3, ArrowRight } from 'lucide-react';
@@ -10,15 +11,13 @@ const Services = () => {
     threshold: 0.1
   });
 
-  const services = [
+  const defaultServices = [
     {
       icon: Search,
       title: 'SEO Optimization',
       description: 'Dominate search results with our comprehensive SEO strategies. We help businesses increase organic visibility, drive qualified traffic, and achieve sustainable long-term growth.',
       slug: 'seo',
       features: ['Technical SEO Audits', 'Keyword Research & Strategy', 'On-Page Optimization', 'Link Building', 'Local SEO', 'Content Optimization'],
-      price: 'Starting from $2,500/mo',
-      results: 'Average 450% increase in organic traffic'
     },
     {
       icon: Target,
@@ -26,8 +25,6 @@ const Services = () => {
       description: 'Maximize your advertising ROI with data-driven PPC campaigns across Google Ads, Facebook, LinkedIn, and more. Get instant visibility and qualified leads.',
       slug: 'ppc',
       features: ['Google Ads Management', 'Facebook & Instagram Ads', 'LinkedIn Advertising', 'Campaign Optimization', 'A/B Testing', 'Conversion Tracking'],
-      price: 'Starting from $3,000/mo',
-      results: 'Average 4.2x return on ad spend'
     },
     {
       icon: Users,
@@ -35,8 +32,6 @@ const Services = () => {
       description: 'Build engaged communities and drive conversions through strategic social media campaigns. Create compelling content that resonates with your audience.',
       slug: 'social-media',
       features: ['Content Creation', 'Community Management', 'Influencer Partnerships', 'Social Media Ads', 'Analytics & Reporting', 'Brand Building'],
-      price: 'Starting from $1,800/mo',
-      results: 'Average 300% follower growth'
     },
     {
       icon: Code,
@@ -44,8 +39,6 @@ const Services = () => {
       description: 'Create high-converting websites and landing pages optimized for performance, user experience, and search engines. Modern designs that drive results.',
       slug: 'web-development',
       features: ['Custom Web Development', 'E-commerce Solutions', 'Landing Pages', 'Mobile Responsive Design', 'Performance Optimization', 'CMS Integration'],
-      price: 'Starting from $5,000',
-      results: 'Average 180% conversion rate increase'
     },
     {
       icon: PenTool,
@@ -53,8 +46,6 @@ const Services = () => {
       description: 'Engage your audience with compelling content that drives traffic, builds brand authority, and generates leads. Strategic content that converts.',
       slug: 'content-marketing',
       features: ['Content Strategy', 'Blog Writing', 'Video Content', 'Email Marketing', 'Copywriting', 'Content Distribution'],
-      price: 'Starting from $2,000/mo',
-      results: 'Average 200% lead increase'
     },
     {
       icon: BarChart3,
@@ -62,10 +53,21 @@ const Services = () => {
       description: 'Make informed decisions with comprehensive analytics and transparent performance reporting. Track ROI and optimize for better results.',
       slug: 'analytics',
       features: ['Google Analytics Setup', 'Custom Dashboards', 'Performance Tracking', 'ROI Analysis', 'Conversion Tracking', 'Monthly Reports'],
-      price: 'Starting from $800/mo',
-      results: 'Complete visibility into your marketing ROI'
     }
   ];
+
+  const [services, setServices] = useState(defaultServices);
+
+  useEffect(() => {
+    document.title = 'Digital Marketing Services | Webzoneo';
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+    fetch(apiBase + '/api/services').then((response) => response.ok ? response.json() : Promise.reject(new Error('API unavailable'))).then((items) => {
+      if (Array.isArray(items) && items.length) {
+        const icons = { seo: Search, ppc: Target, 'social-media': Users, 'web-development': Code, 'content-marketing': PenTool, analytics: BarChart3 };
+        setServices(items.map((item) => ({ ...item, icon: icons[item.slug] || icons[item.category] || Search, features: item.features || [] })));
+      }
+    }).catch(() => { /* Keep bundled service descriptions if the API is unavailable. */ });
+  }, []);
 
   return (
     <div className="pt-20">
@@ -110,7 +112,7 @@ const Services = () => {
                     </div>
                     <div className="ml-6">
                       <h3 className="text-2xl font-bold text-[#111827]">{service.title}</h3>
-                      <p className="text-[#0ea5a4] font-semibold">{service.price}</p>
+                      <p className="text-sm text-gray-500">Scope tailored to your goals</p>
                     </div>
                   </div>
                   
@@ -128,10 +130,6 @@ const Services = () => {
                     </ul>
                   </div>
 
-                  <div className="bg-[#f0fdfa] rounded-lg p-4 mb-6">
-                    <p className="text-sm text-[#0f766e] font-medium">{service.results}</p>
-                  </div>
-
                   <div className="flex items-center justify-between">
                     <Link
                       to={`/services/${service.slug}`}
@@ -140,9 +138,7 @@ const Services = () => {
                       Learn More
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
-                    <button className="bg-[#0ea5a4] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#0b9488] transition-colors">
-                      Get Started
-                    </button>
+                    <Link to="/contact" className="bg-[#0ea5a4] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#0b9488] transition-colors">Discuss</Link>
                   </div>
                 </motion.div>
               );

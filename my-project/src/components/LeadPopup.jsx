@@ -149,7 +149,7 @@ const LeadPopup = ({ isOpen, onClose }) => {
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={handleClose}
         >
-          <motion.div
+          <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="lead-popup-title"
@@ -339,7 +339,7 @@ const LeadPopup = ({ isOpen, onClose }) => {
                 </p>
               </form>
             ) : (
-              <motion.div
+              <div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="p-8 text-center"
@@ -366,8 +366,8 @@ const LeadPopup = ({ isOpen, onClose }) => {
                 </button>
               </div>
             )}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
     </AnimatePresence>,
     document.body

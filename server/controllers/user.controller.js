@@ -102,7 +102,7 @@ export async function adminRegisterUserController(request, response) {
     //   });
     // }
 
-    const { name, email } = request.body;
+    const { name, email, password } = request.body;
     if (!name || !email || !password) {
       return response.status(400).json({
         message: "Provide name, email, and password",
@@ -128,7 +128,7 @@ export async function adminRegisterUserController(request, response) {
     const newUser = new UserModel({
       name,
       email,
-   
+      password: hashPassword,
       role: "Admin",
       adminAccess: false,
       pendingAdmin: true,

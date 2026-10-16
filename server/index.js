@@ -1,68 +1,40 @@
-<<<<<<< HEAD
 import express from 'express';
+import mongoose from 'mongoose';
 import cors from 'cors';
-import dotenv from 'dotenv';
+import helmet from 'helmet';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import rateLimit from 'express-rate-limit';
+import nodemailer from 'nodemailer';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
-import helmet from 'helmet';
-import connectDB from './config/connectDb.js';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import 'dotenv/config';
+import { isValidEmail, isValidSlug } from './lib/validation.js';
 import userRouter from './routes/user.route.js';
 import leadRouter from './routes/lead.route.js';
 import blogRouter from './routes/blog.route.js';
 import categoryRouter from './routes/category.route.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-// Get current directory path
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-
-// Load environment variables from .env file
-dotenv.config();
-=======
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const helmet = require('helmet');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const rateLimit = require('express-rate-limit');
-const nodemailer = require('nodemailer');
-const { isValidEmail, isValidSlug } = require('./lib/validation');
-require('dotenv').config();
->>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-<<<<<<< HEAD
-
-app.use(cors());
-app.use(express.json());
-app.use(cookieParser());
-app.use(morgan('dev'));
-app.use(helmet({
-    crossOriginResourcePolicy :false
-}))
-
-// Serve uploaded files statically
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Simple route to check server is working
-app.get("/", (request, response) => {
-  response.json({
-      message: `Hello World! Server is running on port ${process.env.PORT}`
-=======
 // Middleware
-app.use(helmet());
+app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+app.use(cookieParser());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:5174').split(',').map((origin) => origin.trim()).filter(Boolean);
 app.use(cors({ origin(origin, callback) { if (!origin || allowedOrigins.includes(origin)) return callback(null, true); return callback(new Error('Origin is not allowed by CORS')); } }));
 app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/webzoneo').then(() => console.log('MongoDB connected')).catch((error) => { console.error('MongoDB connection failed:', error.message); process.exit(1); });
+mongoose.connect(process.env.MONGODB_URI || process.env.MONGODB_URL || 'mongodb://localhost:27017/webzoneo').then(() => console.log('MongoDB connected')).catch((error) => { console.error('MongoDB connection failed:', error.message); process.exit(1); });
 
 // Models
 const Contact = mongoose.model('Contact', {
@@ -121,7 +93,7 @@ const Client = mongoose.model('Client', {
   createdAt: { type: Date, default: Date.now },
 });
 
-const Blog = mongoose.model('Blog', {
+const Blog = mongoose.models.WebzoneoBlog || mongoose.model('WebzoneoBlog', {
   title: { type: String, required: true, trim: true, maxlength: 180 },
   slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
   excerpt: { type: String, required: true, maxlength: 500 },
@@ -137,7 +109,7 @@ const Blog = mongoose.model('Blog', {
   updatedAt: { type: Date, default: Date.now }
 });
 
-const Service = mongoose.model('Service', {
+const Service = mongoose.models.WebzoneoService || mongoose.model('WebzoneoService', {
   title: { type: String, required: true, trim: true, maxlength: 160 },
   slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
   description: { type: String, required: true, maxlength: 3000 },
@@ -149,9 +121,13 @@ const Service = mongoose.model('Service', {
   updatedAt: { type: Date, default: Date.now }
 });
 
+// Existing application routes remain available alongside the Webzoneo content API.
+app.use('/api/user', userRouter);
+app.use('/api/lead', leadRouter);
+app.use('/api/blog', blogRouter);
+app.use('/api/category', categoryRouter);
+
 // Routes
-
-
 const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false });
 const requireAdmin = (req, res, next) => {
   const header = req.headers.authorization || '';
@@ -513,35 +489,19 @@ app.get('/', (req, res) => {
     message: 'Webzoneo API Server',
     version: '1.0.0',
     status: 'Running'
->>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
   });
 });
 
-app.use('/api/user', userRouter)
-app.use('/api/lead', leadRouter)
-app.use('/api/blog', blogRouter)
-app.use('/api/category', categoryRouter)
-
-// Connect to the database and start the server
-import UserModel from './models/user.model.js';
-import CategoryModel from './models/category.model.js';
-import BlogModel from './models/blog.model.js';
-import LeadModel from './models/lead.model.js';
-
-connectDB().then(() => {
-    
-  app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-  });
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
-<<<<<<< HEAD
-=======
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log('MongoDB configured: ' + (process.env.MONGODB_URI ? 'custom URI' : 'local default URI'));
 });
 
-module.exports = app;
->>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
+export default app;

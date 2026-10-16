@@ -1,10 +1,15 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import express from 'express';
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
 
-test('production API dependencies load with the configured CommonJS server', () => {
-  assert.equal(typeof require('express'), 'function');
-  assert.equal(typeof require('mongoose').connect, 'function');
-  assert.equal(typeof require('bcryptjs').compare, 'function');
-  assert.equal(typeof require('jsonwebtoken').sign, 'function');
-  assert.equal(typeof require('nodemailer').createTransport, 'function');
+test('production API dependencies load with the configured ES module server', () => {
+  assert.equal(typeof express, 'function');
+  assert.equal(typeof mongoose.connect, 'function');
+  assert.equal(typeof bcrypt.compare, 'function');
+  assert.equal(typeof jwt.sign, 'function');
+  assert.equal(typeof nodemailer.createTransport, 'function');
 });

@@ -10,31 +10,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "@tailwindcss/vite": "^4.3.3",
-    "axios": "^1.13.2",
-=======
     "axios": "^1.19.1",
->>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.553.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-<<<<<<< HEAD
-    "react-router-dom": "^6.30.2",
-    "react-simple-wysiwyg": "^3.4.1",
-    "tailwindcss": "^4.3.3"
-=======
     "react-router-dom": "^7.18.4",
     "tailwindcss": "^4.1.17"
->>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^5.1.0",
-    "baseline-browser-mapping": "^2.10.8",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",

@@ -65,7 +65,7 @@ cd /var/www/DigitalM/server
 npm ci
 npm test --if-present
 ```
-If the repository has no committed lockfile, use `npm install` once, review and commit the generated lockfile, then use `npm ci` for repeatable releases. Do not ignore build or lint errors.
+The three project lockfiles have been reconciled with their package manifests in this repair branch. Use `npm ci` for repeatable releases. Whenever a dependency manifest changes in the future, run `npm install` in that project directory and commit the matching lockfile before using `npm ci` in CI or production. Do not ignore build/lint errors.
 
 ## 5. API smoke tests
 

@@ -46,7 +46,7 @@ const Login = () => {
       } else {
         setError(data.message || 'Login failed');
       }
-    } catch (error) {
+    } catch {
       setError('Network error. Please try again.');
     }
 

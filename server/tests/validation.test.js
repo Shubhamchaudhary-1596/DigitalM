@@ -1,6 +1,6 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const { isValidEmail, isValidSlug } = require('../lib/validation');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { isValidEmail, isValidSlug } from '../lib/validation.js';
 
 test('accepts ordinary email addresses and rejects malformed values', () => {
   assert.equal(isValidEmail('hello@example.com'), true);

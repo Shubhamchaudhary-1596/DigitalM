@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import {
   Mail,
   Phone,
@@ -9,8 +9,6 @@ import {
   Send,
   CheckCircle,
 } from 'lucide-react';
-
-const WEB3FORMS_ACCESS_KEY = 'YOUR_WEB3FORMS_ACCESS_KEY';
 
 const initialFormData = {
   name: '',
@@ -88,43 +86,24 @@ const LeadPopup = ({ isOpen, onClose }) => {
       return;
     }
 
-    if (
-      !WEB3FORMS_ACCESS_KEY ||
-      WEB3FORMS_ACCESS_KEY === 'YOUR_WEB3FORMS_ACCESS_KEY'
-    ) {
-      setError(
-        'Please configure your Web3Forms access key first.'
-      );
-      return;
-    }
-
     setIsLoading(true);
     setError('');
 
     try {
-      const payload = {
-        access_key: WEB3FORMS_ACCESS_KEY,
-        subject: `New Consultation Request - ${formData.service}`,
-        from_name: 'DigitalM Website',
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        phone: formData.phone.trim() || 'Not provided',
-        service: formData.service,
-        message: formData.message.trim(),
-        botcheck: '',
-      };
-
-      const response = await fetch(
-        'https://api.web3forms.com/submit',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+          service: formData.service,
+          message: formData.message.trim(),
+        }),
+      });
 
       const result = await response.json();
 
@@ -137,7 +116,7 @@ const LeadPopup = ({ isOpen, onClose }) => {
       setIsSubmitted(true);
       setFormData(initialFormData);
     } catch (err) {
-      console.error('Web3Forms submission error:', err);
+      console.error('Consultation request submission error:', err);
 
       setError(
         err.message ||
@@ -162,7 +141,7 @@ const LeadPopup = ({ isOpen, onClose }) => {
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <motion.div
+        <div
           key="lead-popup-overlay"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -170,7 +149,7 @@ const LeadPopup = ({ isOpen, onClose }) => {
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={handleClose}
         >
-          <motion.div
+          <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="lead-popup-title"
@@ -360,7 +339,7 @@ const LeadPopup = ({ isOpen, onClose }) => {
                 </p>
               </form>
             ) : (
-              <motion.div
+              <div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="p-8 text-center"
@@ -385,10 +364,10 @@ const LeadPopup = ({ isOpen, onClose }) => {
                 >
                   Close
                 </button>
-              </motion.div>
+              </div>
             )}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
     </AnimatePresence>,
     document.body

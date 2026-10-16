@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { createPortal } from 'react-dom';
-=======
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
->>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -17,14 +11,8 @@ import About from './pages/About';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
 import Contact from './pages/Contact';
-<<<<<<< HEAD
-import Login from './pages/Login';
-import Register from './pages/Register';
-=======
 import NotFound from './pages/NotFound';
->>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
 import ScrollToTop from './components/ScrollToTop';
-import LeadPopup from './components/LeadPopup';
 
 // Admin imports
 
@@ -65,34 +53,10 @@ function RouteMetadata() {
   return null;
 }
 
-function AppContent() {
-  const location = useLocation();
-  const [showPopup, setShowPopup] = useState(false);
-
-  // Skip popup on admin/auth pages
-  const isPublicPage = !location.pathname.startsWith('/admin') && !['/login', '/register'].includes(location.pathname);
-
-  useEffect(() => {
-    if (!isPublicPage) return;
-
-    const popupShown = localStorage.getItem('popupShown');
-    if (popupShown) return;
-
-    const timer = setTimeout(() => {
-      setShowPopup(true);
-      localStorage.setItem('popupShown', 'true');
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, [isPublicPage]);
-
+function App() {
   return (
-<<<<<<< HEAD
-    <>
-=======
     <Router>
       <RouteMetadata />
->>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
       <div className="min-h-screen bg-white">
         <ScrollToTop />
         <Navbar />
@@ -107,29 +71,15 @@ function AppContent() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/contact" element={<Contact />} />
-<<<<<<< HEAD
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-=======
             <Route path="*" element={<NotFound />} />
 
             {/* Admin lives in the separate authenticated dashboard application. */}
             <Route path="/admin/*" element={<Navigate to="/contact" replace />} />
->>>>>>> e1bdb7a24845c3cf6417333fb6ace59d1500573e
 
           </Routes>
         </main>
         <Footer />
       </div>
-      {showPopup && <LeadPopup isOpen={showPopup} onClose={() => setShowPopup(false)} />}
-    </>
-  );
-}
-
-function App() {
-  return (
-    <Router>
-      <AppContent />
     </Router>
   );
 }

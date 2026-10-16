@@ -51,7 +51,7 @@ const Register = () => {
       } else {
         setError(data.message || 'Registration failed');
       }
-    } catch (error) {
+    } catch {
       setError('Network error. Please try again.');
     }
 

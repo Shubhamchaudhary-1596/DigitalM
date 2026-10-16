@@ -161,6 +161,7 @@ export const editData = async (url, updatedData) => {
 // delete data from database
 export const deleteData = async (url, updatedData) =>{
   const params = {
+    data: updatedData,
     headers: {
       Authorization: `Bearer ${localStorage.getItem("accesstoken")}`, //Include your API key in the authorization header
       "Content-Type": "application/json", // Adjust the content type as needed

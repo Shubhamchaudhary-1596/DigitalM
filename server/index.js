@@ -11,14 +11,13 @@ import morgan from 'morgan';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
-import validation from './lib/validation.js';
+import { isValidEmail, isValidSlug } from './lib/validation.js';
 import userRouter from './routes/user.route.js';
 import leadRouter from './routes/lead.route.js';
 import blogRouter from './routes/blog.route.js';
 import categoryRouter from './routes/category.route.js';
 
 dotenv.config();
-const { isValidEmail, isValidSlug } = validation;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
